@@ -522,7 +522,7 @@ ninja.data = [{
         title: 'LinkedIn',
         section: 'Socials',
         handler: () => {
-          window.open("https://www.linkedin.com/in/daviddinkevich", "_blank");
+          window.open("https://www.linkedin.com/in/david-dinkevich", "_blank");
         },
       },{
         id: 'social-rss',
