@@ -17,4 +17,6 @@ I’m a Machine Learning researcher and MSc student at the Hebrew University of 
 
 My current work centers on diffusion-based visual world models—systems that represent and simulate environments with applications in visual planning, animation, and AI-driven creativity. I am particularly interested in autoregressive video diffusion models, and in methods for generating long-duration, high-quality video efficiently.
 
-I have experience modifying the internals of existing models—-for example, my thesis explores adapting attention mechanisms in transformer-based image models to improve character consistency across frames.
+I have experience modifying the internals of existing models—for example, my thesis explores adapting attention mechanisms in transformer-based image models to improve character consistency across frames.
+
+My resume is available <a href="https://github.com/DavidDinkevich/daviddinkevich.github.io/asserts/pdf/resume.pdf" target="_blank">here</a>.
