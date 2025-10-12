@@ -13,10 +13,10 @@ news: false
 social: true
 ---
 
-I’m a Machine Learning researcher and MSc student at the Hebrew University of Jerusalem, where I work under the supervision of <a href="https://www.cs.huji.ac.il/~danix/" target="_blank">Prof. Dani Lischinski</a>. My research focuses on generative models for images and video.
+I’m a Machine Learning researcher and PhD student at the Hebrew University of Jerusalem, where I work under the supervision of <a href="https://www.cs.huji.ac.il/~danix/" target="_blank">Prof. Dani Lischinski</a>. My research focuses on generative models for images and video.
 
-My current work centers on diffusion-based visual world models—systems that represent and simulate environments with applications in visual planning, animation, and AI-driven creativity. I am particularly interested in autoregressive video diffusion models, and in methods for generating long-duration, high-quality video efficiently.
+My current work focuses on post-training methods that make diffusion-based video models behave reliably for real users: less prompt fragile, more controllable, and consistent across shots. The goal is to make them work on the first try.
 
-I have experience modifying the internals of existing models—for example, my thesis explores adapting attention mechanisms in transformer-based image models to improve character consistency across frames.
+I have experience modifying the internals of existing models. My MSc thesis, <a href="https://www.arxiv.org/abs/2508.09983" target="_blank">Story2Board: A Training-Free Approach for Expressive Storyboard Generation</a>, explores adapting attention mechanisms in transformer-based image models to improve character consistency across frames.
 
 My resume is available <a href="https://github.com/DavidDinkevich/daviddinkevich.github.io/assets/pdf/resume.pdf" target="_blank">here</a>.
