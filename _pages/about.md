@@ -19,4 +19,4 @@ My current work centers on diffusion-based visual world models—systems that re
 
 I have experience modifying the internals of existing models—for example, my thesis explores adapting attention mechanisms in transformer-based image models to improve character consistency across frames.
 
-My resume is available <a href="https://github.com/DavidDinkevich/daviddinkevich.github.io/asserts/pdf/resume.pdf" target="_blank">here</a>.
+My resume is available <a href="https://github.com/DavidDinkevich/daviddinkevich.github.io/assets/pdf/resume.pdf" target="_blank">here</a>.
