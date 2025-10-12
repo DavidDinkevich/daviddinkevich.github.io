@@ -19,4 +19,4 @@ My current work focuses on post-training methods that make diffusion-based video
 
 I have experience modifying the internals of existing models. My MSc thesis, <a href="https://www.arxiv.org/abs/2508.09983" target="_blank">Story2Board: A Training-Free Approach for Expressive Storyboard Generation</a>, explores adapting attention mechanisms in transformer-based image models to improve character consistency across frames.
 
-My resume is available <a href="https://github.com/DavidDinkevich/daviddinkevich.github.io/assets/pdf/resume.pdf" target="_blank">here</a>.
+My resume is available <a href="https://daviddinkevich.github.io/assets/pdf/resume.pdf" target="_blank">here</a>.
