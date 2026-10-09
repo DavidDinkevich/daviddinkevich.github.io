@@ -1,1 +1,36 @@
-document.addEventListener("DOMContentLoaded",(()=>{const e=document.querySelectorAll("img[data-src]"),t=new IntersectionObserver((e=>{for(const r of e){if(!r.isIntersecting)continue;const e=r.target;e.src=e.dataset.src,e.removeAttribute("data-src"),t.unobserve(e)}}),{rootMargin:"500px 0px",threshold:0});e.forEach((e=>t.observe(e)));const r=window.matchMedia("(prefers-reduced-motion: reduce)").matches,s=document.querySelectorAll(".split-section");if(r)return void s.forEach((e=>e.classList.add("is-in")));s.forEach((e=>e.classList.add("will-reveal")));const o=new IntersectionObserver((e=>{for(const t of e)t.isIntersecting&&(t.target.classList.add("is-in"),o.unobserve(t.target))}),{threshold:.08,rootMargin:"0px 0px 12% 0px"});s.forEach((e=>o.observe(e)))}));
+document.addEventListener("DOMContentLoaded", () => {
+  const deferredImages = document.querySelectorAll("img[data-src]");
+  const imageObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const image = entry.target;
+        image.src = image.dataset.src;
+        image.removeAttribute("data-src");
+        imageObserver.unobserve(image);
+      }
+    },
+    { rootMargin: "500px 0px", threshold: 0 }
+  );
+  deferredImages.forEach((image) => imageObserver.observe(image));
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const panels = document.querySelectorAll(".split-section");
+  if (reduced) {
+    panels.forEach((el) => el.classList.add("is-in"));
+    return;
+  }
+  panels.forEach((el) => el.classList.add("will-reveal"));
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-in");
+          io.unobserve(entry.target);
+        }
+      }
+    },
+    { threshold: 0.08, rootMargin: "0px 0px 12% 0px" }
+  );
+  panels.forEach((el) => io.observe(el));
+});

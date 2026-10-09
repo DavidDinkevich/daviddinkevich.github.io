@@ -1,1 +1,315 @@
-function retainedPrefixAt(e){return e<1500?0:e<3100?1:2}function vaeCaption(e){return 0===e?"Levels 1\u20132 are zeroed.":1===e?"Level 2 is zeroed.":"All three levels are kept."}function drawImageCube(e,t,r,o,n,l,a,s){e.save(),e.globalAlpha*=a,drawAxonometricCuboid(e,{x:r,y:o,frontW:n,frontH:n,depth:l,skew:.42*l,rows:8,cols:8,frontImage:t,frontFill:"#f5f5f7",slices:[{fraction:1,color:"#d8dde4"}]}),e.fillStyle=MUTED,e.font="600 11px Inter, -apple-system, sans-serif",e.textAlign="center",e.fillText(s,r+n/2,o+n+19),e.restore()}function drawElbowArrow(e,t,r,o,n,l,a){const s=Math.sign(o-t)||1;e.save(),e.globalAlpha=a,e.strokeStyle=MUTED,e.fillStyle=MUTED,e.lineWidth=1.3,e.beginPath(),e.moveTo(t,r),e.lineTo(t,n),e.lineTo(o,n),e.stroke(),e.beginPath(),e.moveTo(o,n),e.lineTo(o-8*s,n-4),e.lineTo(o-8*s,n+4),e.closePath(),e.fill(),e.font="600 10px Inter, -apple-system, sans-serif",e.textAlign="center",e.textBaseline="bottom",e.fillText(l,(t+o)/2,n-7),e.restore()}function drawLossPair(e,t,r,o,n,l,a,s,i){e.save(),e.globalAlpha=i,roundRect(e,o,l,a,a,6),e.save(),e.clip(),e.drawImage(t,o,l,a,a),e.restore(),e.strokeStyle=HAIR,e.stroke(),roundRect(e,n,l,a,a,6),e.save(),e.clip(),e.drawImage(r,n,l,a,a),e.restore(),e.strokeStyle=HAIR,e.stroke(),e.fillStyle=MUTED,e.font="10px Inter, -apple-system, sans-serif",e.textAlign="center",e.fillText(s+" target",o+a/2,l+a+15),e.fillText(s+" recon",n+a/2,l+a+15),e.fillStyle=INK,e.font="600 17px Inter, -apple-system, sans-serif",e.fillText("Loss",(o+a+n)/2,l+a/2),e.restore()}function latentSlices(e,t){return[.18,.28,.54].map(((r,o)=>({fraction:r,color:o<=e?APEX_LEVEL.colors[o]:mixHexColor(APEX_LEVEL.colors[o],"#d2d3d7",t),label:String(o),labelColor:o>e&&t>.5?MUTED:"#fff"})))}function drawLevelLegend(e,t,r,o=!1){let n=t;const l=o?9:12;e.font=o?"600 10px Inter, -apple-system, sans-serif":"600 13px Inter, -apple-system, sans-serif",e.textAlign="left",e.textBaseline="middle";for(let t=0;t<APEX_LEVEL.labels.length;t++)e.fillStyle=APEX_LEVEL.colors[t],roundRect(e,n,r-l/2,l,l,2),e.fill(),e.fillStyle=INK,e.fillText(APEX_LEVEL.labels[t],n+l+5,r),n+=l+5+e.measureText(APEX_LEVEL.labels[t]).width+(o?10:16)}function drawVaeDesktop(e,t,r,o,n){const l=clip(t/1e3,.78,1.2);e.save(),e.scale(l,l),t/=l,r/=l;const a=132,s=136,i=Math.min(245,Math.max(175,t-690)),c=54,d=2*a+s+i+2*c+122,f=Math.max(14,(t-d)/2),m=122,u=f+a+30,w=132,p=u+c+30,E=126,g=p+s+i+32,x=132,L=g+c+30,b=m;drawLevelLegend(e,p,20),drawImageCube(e,o[2],f,m,a,16,1,"image"),drawNetworkBlock(e,u,w,c,98,"encode","E"),drawAxonometricCuboid(e,{x:p,y:E,frontW:s,frontH:s,depth:i,skew:.38*i,rows:8,cols:8,frontFill:"#f5f7fa",showSliceLabels:!1,slices:latentSlices(n,1)}),drawNetworkBlock(e,g,x,c,98,"decode","D"),drawImageCube(e,o[n],L,b,a,16,1,"full-size decode");const h=VAE_PREFIXES[n],A=h.thumbSize,v=r-A-28,I=110,S=t/2-I/2-A,y=t/2+I/2,k=v+A/2;drawElbowArrow(e,f+a/2,m+a+24,S-8,k,"resize",1),drawElbowArrow(e,L+a/2,b+a+24,y+A+8,k,"resize",1),drawLossPair(e,o[2],o[n],S,y,v,A,h.resolution,1),e.restore()}function drawVaeMobile(e,t,r,o,n){const l=78,a=12,s=70,i=100,c=154,d=70,f=Math.max(54,t-c-d-12),m=82;drawLevelLegend(e,c,48,!0),drawImageCube(e,o[2],a,s,l,10,1,"image"),drawNetworkBlock(e,i,s+9,36,60,"encode","E"),drawAxonometricCuboid(e,{x:c,y:m,frontW:d,frontH:d,depth:f,rows:8,cols:8,showSliceLabels:!1,slices:latentSlices(n,1)});const u=t-l-12,w=204;drawNetworkBlock(e,t-l-74,218,40,62,"decode","D"),drawImageCube(e,o[n],u,w,l,10,1,"full-size decode");const p=VAE_PREFIXES[n],E=Math.min(p.thumbSize,64),g=r-E-28,x=58,L=t/2-x/2-E,b=t/2+x/2,h=g+E/2;drawElbowArrow(e,a+l/2,s+l+24,L-8,h,"resize",1),drawElbowArrow(e,u+l/2,w+l+24,b+E+8,h,"resize",1),drawLossPair(e,o[2],o[n],L,b,g,E,p.resolution,1)}function drawVaeFrame(e,t,r,o,n){e.clearRect(0,0,t,r),e.fillStyle=PAGE,e.fillRect(0,0,t,r),t<680?drawVaeMobile(e,t,r,o,n):drawVaeDesktop(e,t,r,o,n)}async function startVaeAnim(){function e(){const e=o.parentElement,t=Math.max(320,e.clientWidth),r=clip(t/1e3,.78,1.2);return fitCanvas(o,t,t<680?500:460*r)}function t(){for(const e of a)e.setAttribute("aria-pressed",String(Number(e.dataset.prefixLevel)===d))}function r(r){d=null==c?retainedPrefixAt(r):c,t();const{ctx:o,cssW:n,cssH:a}=e();drawVaeFrame(o,n,a,s,d),l&&(l.textContent=vaeCaption(d))}const o=document.getElementById("vae-anim"),n=document.getElementById("representation"),l=document.getElementById("representation-status"),a=Array.from(document.querySelectorAll("[data-prefix-level]"));if(!o||!n)return;const s=await Promise.all(VAE_STILLS.map(loadImage)),i=document.getElementById("representation-replay");let c=null,d=0;i&&i.addEventListener("click",(()=>{c=null}));const f=createOneShotPlayer({section:n,replayButton:i,durationMs:4600,draw:r,threshold:.55});for(const e of a)e.addEventListener("click",(()=>{const t=Number(e.dataset.prefixLevel);if(!Number.isInteger(t)||t<0||t>2)throw new Error("Invalid prefix level: "+e.dataset.prefixLevel);c=t,d=t,f.seek(4600)}));window.addEventListener("resize",(()=>f.repaint()))}const VAE_STILLS=["static/images/hero/l0.png?v=real-decodes-1","static/images/hero/l1.png?v=real-decodes-1","static/images/hero/l2.png?v=real-decodes-1"],VAE_PREFIXES=[{name:"Level 0",resolution:"\xbc resolution",thumbSize:46},{name:"Level 1",resolution:"\xbd resolution",thumbSize:64},{name:"Level 2",resolution:"full resolution",thumbSize:82}];document.addEventListener("DOMContentLoaded",(()=>{const e=document.getElementById("representation");if(!e)return;const t=new IntersectionObserver((e=>{e.some((e=>e.isIntersecting))&&(t.disconnect(),startVaeAnim().catch(console.error))}),{rootMargin:"600px 0px",threshold:0});t.observe(e)}));
+/** Viewport 2: the resolution-supervised, cumulative-prefix autoencoder. */
+const VAE_STILLS = [
+  "static/images/hero/l0.png?v=real-decodes-1",
+  "static/images/hero/l1.png?v=real-decodes-1",
+  "static/images/hero/l2.png?v=real-decodes-1",
+];
+
+const VAE_PREFIXES = [
+  { name: "Level 0", resolution: "¼ resolution", thumbSize: 46 },
+  { name: "Level 1", resolution: "½ resolution", thumbSize: 64 },
+  { name: "Level 2", resolution: "full resolution", thumbSize: 82 },
+];
+
+function retainedPrefixAt(ms) {
+  if (ms < 1500) return 0;
+  if (ms < 3100) return 1;
+  return 2;
+}
+
+function vaeCaption(retainedLevel) {
+  if (retainedLevel === 0) return "Levels 1–2 are zeroed.";
+  if (retainedLevel === 1) return "Level 2 is zeroed.";
+  return "All three levels are kept.";
+}
+
+function drawImageCube(ctx, image, x, y, size, depth, alpha, label) {
+  ctx.save();
+  ctx.globalAlpha *= alpha;
+  drawAxonometricCuboid(ctx, {
+    x,
+    y,
+    frontW: size,
+    frontH: size,
+    depth,
+    skew: depth * 0.42,
+    rows: 8,
+    cols: 8,
+    frontImage: image,
+    frontFill: "#f5f5f7",
+    slices: [{ fraction: 1, color: "#d8dde4" }],
+  });
+  ctx.fillStyle = MUTED;
+  ctx.font = "600 11px Inter, -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(label, x + size / 2, y + size + 19);
+  ctx.restore();
+}
+
+function drawElbowArrow(ctx, x0, y0, x1, y1, label, alpha) {
+  const direction = Math.sign(x1 - x0) || 1;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = MUTED;
+  ctx.fillStyle = MUTED;
+  ctx.lineWidth = 1.3;
+  ctx.beginPath();
+  ctx.moveTo(x0, y0);
+  ctx.lineTo(x0, y1);
+  ctx.lineTo(x1, y1);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x1 - direction * 8, y1 - 4);
+  ctx.lineTo(x1 - direction * 8, y1 + 4);
+  ctx.closePath();
+  ctx.fill();
+  ctx.font = "600 10px Inter, -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  ctx.fillText(label, (x0 + x1) / 2, y1 - 7);
+  ctx.restore();
+}
+
+function drawLossPair(ctx, target, recon, xTarget, xRecon, y, size, resolution, alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  roundRect(ctx, xTarget, y, size, size, 6);
+  ctx.save();
+  ctx.clip();
+  ctx.drawImage(target, xTarget, y, size, size);
+  ctx.restore();
+  ctx.strokeStyle = HAIR;
+  ctx.stroke();
+
+  roundRect(ctx, xRecon, y, size, size, 6);
+  ctx.save();
+  ctx.clip();
+  ctx.drawImage(recon, xRecon, y, size, size);
+  ctx.restore();
+  ctx.strokeStyle = HAIR;
+  ctx.stroke();
+
+  ctx.fillStyle = MUTED;
+  ctx.font = "10px Inter, -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(resolution + " target", xTarget + size / 2, y + size + 15);
+  ctx.fillText(resolution + " recon", xRecon + size / 2, y + size + 15);
+  ctx.fillStyle = INK;
+  ctx.font = "600 17px Inter, -apple-system, sans-serif";
+  ctx.fillText("Loss", (xTarget + size + xRecon) / 2, y + size / 2);
+  ctx.restore();
+}
+
+function latentSlices(retainedLevel, zeroProgress) {
+  const fractions = [0.18, 0.28, 0.54];
+  return fractions.map((fraction, level) => ({
+    fraction,
+    color: level <= retainedLevel ? APEX_LEVEL.colors[level] : mixHexColor(APEX_LEVEL.colors[level], "#d2d3d7", zeroProgress),
+    label: String(level),
+    labelColor: level > retainedLevel && zeroProgress > 0.5 ? MUTED : "#fff",
+  }));
+}
+
+function drawLevelLegend(ctx, x, y, compact = false) {
+  let legendX = x;
+  const swatch = compact ? 9 : 12;
+  ctx.font = compact ? "600 10px Inter, -apple-system, sans-serif" : "600 13px Inter, -apple-system, sans-serif";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  for (let level = 0; level < APEX_LEVEL.labels.length; level++) {
+    ctx.fillStyle = APEX_LEVEL.colors[level];
+    roundRect(ctx, legendX, y - swatch / 2, swatch, swatch, 2);
+    ctx.fill();
+    ctx.fillStyle = INK;
+    ctx.fillText(APEX_LEVEL.labels[level], legendX + swatch + 5, y);
+    legendX += swatch + 5 + ctx.measureText(APEX_LEVEL.labels[level]).width + (compact ? 10 : 16);
+  }
+}
+
+function drawVaeDesktop(ctx, w, h, stills, retainedLevel) {
+  const drawingScale = clip(w / 1000, 0.78, 1.2);
+  ctx.save();
+  ctx.scale(drawingScale, drawingScale);
+  w /= drawingScale;
+  h /= drawingScale;
+
+  const imageSize = 132;
+  const latentFront = 136;
+  const latentDepth = Math.min(245, Math.max(175, w - 690));
+  const blockWidth = 54;
+  const contentWidth = imageSize * 2 + latentFront + latentDepth + blockWidth * 2 + 122;
+  const origin = Math.max(14, (w - contentWidth) / 2);
+  const imageX = origin;
+  const imageY = 122;
+  const encoderX = imageX + imageSize + 30;
+  const encoderY = 132;
+  const latentX = encoderX + blockWidth + 30;
+  const latentY = 126;
+  const decoderX = latentX + latentFront + latentDepth + 32;
+  const decoderY = 132;
+  const reconX = decoderX + blockWidth + 30;
+  const reconY = imageY;
+
+  drawLevelLegend(ctx, latentX, 20);
+  drawImageCube(ctx, stills[2], imageX, imageY, imageSize, 16, 1, "image");
+  drawNetworkBlock(ctx, encoderX, encoderY, blockWidth, 98, "encode", "E");
+
+  drawAxonometricCuboid(ctx, {
+    x: latentX,
+    y: latentY,
+    frontW: latentFront,
+    frontH: latentFront,
+    depth: latentDepth,
+    skew: latentDepth * 0.38,
+    rows: 8,
+    cols: 8,
+    frontFill: "#f5f7fa",
+    showSliceLabels: false,
+    slices: latentSlices(retainedLevel, 1),
+  });
+
+  drawNetworkBlock(ctx, decoderX, decoderY, blockWidth, 98, "decode", "D");
+  drawImageCube(ctx, stills[retainedLevel], reconX, reconY, imageSize, 16, 1, "full-size decode");
+
+  const prefix = VAE_PREFIXES[retainedLevel];
+  const thumb = prefix.thumbSize;
+  const lossY = h - thumb - 28;
+  const innerGap = 110;
+  const targetX = w / 2 - innerGap / 2 - thumb;
+  const reconThumbX = w / 2 + innerGap / 2;
+  const routeY = lossY + thumb / 2;
+  drawElbowArrow(ctx, imageX + imageSize / 2, imageY + imageSize + 24, targetX - 8, routeY, "resize", 1);
+  drawElbowArrow(ctx, reconX + imageSize / 2, reconY + imageSize + 24, reconThumbX + thumb + 8, routeY, "resize", 1);
+  drawLossPair(ctx, stills[2], stills[retainedLevel], targetX, reconThumbX, lossY, thumb, prefix.resolution, 1);
+  ctx.restore();
+}
+
+function drawVaeMobile(ctx, w, h, stills, retainedLevel) {
+  const imageSize = 78;
+  const imageX = 12;
+  const imageY = 70;
+  const encoderX = 100;
+  const latentX = 154;
+  const latentFront = 70;
+  const latentDepth = Math.max(54, w - latentX - latentFront - 12);
+  const latentY = 82;
+  drawLevelLegend(ctx, latentX, 48, true);
+  drawImageCube(ctx, stills[2], imageX, imageY, imageSize, 10, 1, "image");
+
+  drawNetworkBlock(ctx, encoderX, imageY + 9, 36, 60, "encode", "E");
+  drawAxonometricCuboid(ctx, {
+    x: latentX,
+    y: latentY,
+    frontW: latentFront,
+    frontH: latentFront,
+    depth: latentDepth,
+    rows: 8,
+    cols: 8,
+    showSliceLabels: false,
+    slices: latentSlices(retainedLevel, 1),
+  });
+
+  const decoderX = w - imageSize - 74;
+  const decoderY = 218;
+  const reconX = w - imageSize - 12;
+  const reconY = 204;
+  drawNetworkBlock(ctx, decoderX, decoderY, 40, 62, "decode", "D");
+  drawImageCube(ctx, stills[retainedLevel], reconX, reconY, imageSize, 10, 1, "full-size decode");
+
+  const prefix = VAE_PREFIXES[retainedLevel];
+  const thumb = Math.min(prefix.thumbSize, 64);
+  const lossY = h - thumb - 28;
+  const innerGap = 58;
+  const targetX = w / 2 - innerGap / 2 - thumb;
+  const reconThumbX = w / 2 + innerGap / 2;
+  const routeY = lossY + thumb / 2;
+  drawElbowArrow(ctx, imageX + imageSize / 2, imageY + imageSize + 24, targetX - 8, routeY, "resize", 1);
+  drawElbowArrow(ctx, reconX + imageSize / 2, reconY + imageSize + 24, reconThumbX + thumb + 8, routeY, "resize", 1);
+  drawLossPair(ctx, stills[2], stills[retainedLevel], targetX, reconThumbX, lossY, thumb, prefix.resolution, 1);
+}
+
+function drawVaeFrame(ctx, w, h, stills, retainedLevel) {
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = PAGE;
+  ctx.fillRect(0, 0, w, h);
+  if (w < 680) {
+    drawVaeMobile(ctx, w, h, stills, retainedLevel);
+  } else {
+    drawVaeDesktop(ctx, w, h, stills, retainedLevel);
+  }
+}
+
+async function startVaeAnim() {
+  const canvas = document.getElementById("vae-anim");
+  const section = document.getElementById("representation");
+  const status = document.getElementById("representation-status");
+  const prefixButtons = Array.from(document.querySelectorAll("[data-prefix-level]"));
+  if (!canvas || !section) return;
+  const stills = await Promise.all(VAE_STILLS.map(loadImage));
+  const replayButton = document.getElementById("representation-replay");
+  let manualLevel = null;
+  let retainedLevel = 0;
+
+  function layout() {
+    const wrap = canvas.parentElement;
+    const cssW = Math.max(320, wrap.clientWidth);
+    const drawingScale = clip(cssW / 1000, 0.78, 1.2);
+    const cssH = cssW < 680 ? 500 : 460 * drawingScale;
+    return fitCanvas(canvas, cssW, cssH);
+  }
+
+  function updateButtons() {
+    for (const button of prefixButtons) {
+      button.setAttribute("aria-pressed", String(Number(button.dataset.prefixLevel) === retainedLevel));
+    }
+  }
+
+  function paint(ms) {
+    retainedLevel = manualLevel == null ? retainedPrefixAt(ms) : manualLevel;
+    updateButtons();
+    const { ctx, cssW, cssH } = layout();
+    drawVaeFrame(ctx, cssW, cssH, stills, retainedLevel);
+    if (status) status.textContent = vaeCaption(retainedLevel);
+  }
+
+  if (replayButton)
+    replayButton.addEventListener("click", () => {
+      manualLevel = null;
+    });
+
+  const player = createOneShotPlayer({
+    section,
+    replayButton,
+    durationMs: 4600,
+    draw: paint,
+    threshold: 0.55,
+  });
+
+  for (const button of prefixButtons) {
+    button.addEventListener("click", () => {
+      const nextLevel = Number(button.dataset.prefixLevel);
+      if (!Number.isInteger(nextLevel) || nextLevel < 0 || nextLevel > 2) {
+        throw new Error("Invalid prefix level: " + button.dataset.prefixLevel);
+      }
+      manualLevel = nextLevel;
+      retainedLevel = nextLevel;
+      player.seek(4600);
+    });
+  }
+  window.addEventListener("resize", () => player.repaint());
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const section = document.getElementById("representation");
+  if (!section) return;
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      startVaeAnim().catch(console.error);
+    },
+    { rootMargin: "600px 0px", threshold: 0 }
+  );
+  observer.observe(section);
+});

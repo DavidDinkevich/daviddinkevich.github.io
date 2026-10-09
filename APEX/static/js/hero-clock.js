@@ -1,1 +1,687 @@
-function clip(e,t,n){return Math.min(n,Math.max(t,e))}function smoothstep(e){const t=clip(e,0,1);return t*t*(3-2*t)}function localT(e,t,n){return clip(1+e*n-t,0,1)}function levelState(e,t,n){return t<=e*n?"unstarted":t>=1+e*n?"done":"denoising"}function loadImage(e){return new Promise(((t,n)=>{const a=new Image;a.onload=()=>t(a),a.onerror=()=>n(new Error("Failed to load "+e)),a.src=e}))}async function loadHeroFrame(e,t,n){const a=new URL(String(t).padStart(3,"0")+".webp",e),i=await loadImage(a.href);if(i.naturalWidth!==HERO.imageWidth*HERO.nLevels||i.naturalHeight!==HERO.imageHeight)throw new Error("Invalid hero image dimensions: "+a);return{tau:t/(HERO.imageCount-1)*n,image:i}}async function loadHeroFrames(e,t){const n=new URL(e,window.location.href),a=1+(HERO.nLevels-1)*HERO.g,i={frameWidth:HERO.imageWidth,frameHeight:HERO.imageHeight,frames:[await loadHeroFrame(n,0,a)]};return i.complete=(async()=>{"complete"!==document.readyState&&await new Promise((e=>window.addEventListener("load",e,{once:!0})));for(let e=1;e<HERO.imageCount;e+=HERO_FRAME_BATCH_SIZE){const r=Math.min(e+HERO_FRAME_BATCH_SIZE,HERO.imageCount),o=await Promise.all(Array.from({length:r-e},((t,i)=>loadHeroFrame(n,e+i,a))));i.frames.push(...o),t(i)}return i})(),i}function nearestHeroFrame(e,t){let n=e[0],a=Math.abs(t-n.tau);for(let i=1;i<e.length;i++){const r=Math.abs(t-e[i].tau);r<a&&(n=e[i],a=r)}return n}function createGaussianNoise(e,t){function n(){return o=1664525*o+1013904223>>>0,(o+1)/4294967297}const a=document.createElement("canvas");a.width=e,a.height=e;const i=a.getContext("2d"),r=i.createImageData(e,e);let o=t>>>0;for(let e=0;e<r.data.length;e+=4){const t=Math.sqrt(-2*Math.log(n()))*Math.cos(2*Math.PI*n()),a=Math.round(clip(128+47*t,0,255));r.data[e]=a,r.data[e+1]=a,r.data[e+2]=a,r.data[e+3]=255}return i.putImageData(r,0,0),a}function roundRect(e,t,n,a,i,r){const o=Math.min(r,Math.max(0,a/2),Math.max(0,i/2));e.beginPath(),e.moveTo(t+o,n),e.arcTo(t+a,n,t+a,n+i,o),e.arcTo(t+a,n+i,t,n+i,o),e.arcTo(t,n+i,t,n,o),e.arcTo(t,n,t+a,n,o),e.closePath()}function hexToRgb(e){const t=parseInt(e.slice(1),16);return{r:t>>16&255,g:t>>8&255,b:255&t}}function mixRgb(e,t,n){return{r:Math.round(lerp(e.r,t.r,n)),g:Math.round(lerp(e.g,t.g,n)),b:Math.round(lerp(e.b,t.b,n))}}function lerp(e,t,n){return e+(t-e)*n}function rgbStr(e){return"rgb("+e.r+","+e.g+","+e.b+")"}function clockGeometry(e,t){const n=clip(t/188,1,2),a=70*n,i=e-12*n;return{scale:n,left:a,right:i,trackW:i-a,top:22*n}}function drawClock(e,t,n,a,i,r,o,l,s){e.clearRect(0,0,t,n);const c=1+(r-1)*i,d=clip(a/c,0,1),{scale:u,left:m,right:f,trackW:h,top:g}=clockGeometry(t,n),p=(n-g-6*u)/r,y=16*u;e.fillStyle="#6e6e73",e.font="600 "+12*u+"px -apple-system, BlinkMacSystemFont, Inter, sans-serif",e.textAlign="left",e.fillText("0%",m,14*u),e.textAlign="center",e.fillText("50%",m+h/2,14*u),e.textAlign="right",e.fillText("100%",f,14*u),e.strokeStyle="#e2e2e7",e.lineWidth=u,[0,.5,1].forEach((t=>{const a=m+t*h;e.beginPath(),e.moveTo(a,g),e.lineTo(a,n-18*u),e.stroke()}));const E=m+d*h;for(let t=0;t<r;t++){const n=g+p*t+p/2;e.font="600 "+13*u+"px -apple-system, BlinkMacSystemFont, Inter, sans-serif",e.fillStyle=l[t],e.textAlign="right",e.textBaseline="middle",e.fillText(o[t],m-10*u,n);const a=1+t*i,r=m+t*i/c*h,s=m+Math.min(a,c)/c*h;roundRect(e,m,n-y/2,h,y,8*u),e.fillStyle="#ececef",e.fill();const d=Math.max(0,s-r);if(d>0){const a=hexToRgb(l[t]);e.fillStyle=rgbStr(mixRgb({r:255,g:255,b:255},a,.24)),roundRect(e,r,n-y/2,d,y,8*u),e.fill();const i=clip(E,r,s),o=i-r;if(o<=0)continue;const c=e.createLinearGradient(r,0,Math.max(r+1,i),0);c.addColorStop(0,rgbStr(mixRgb({r:255,g:255,b:255},a,.5))),c.addColorStop(1,l[t]),e.fillStyle=c,roundRect(e,r,n-y/2,o,y,8*u),e.fill()}}const w=14*u,H=13*u,R=n-2*u-H,x=R-7*u;e.strokeStyle="#1d1d1f",e.lineWidth=2*u,e.beginPath(),e.moveTo(E,g-2*u),e.lineTo(E,x),e.stroke(),e.save(),e.globalAlpha=.68+.32*s,e.fillStyle="#6e6e73",e.beginPath(),e.moveTo(E,x),e.lineTo(E-5*u,R+u),e.lineTo(E+5*u,R+u),e.closePath(),e.fill(),roundRect(e,E-w/2,R,w,H,2.5*u),e.fill(),e.restore()}function drawToken(e,t,n,a,i,r,o,l){function s(t,n){e.fillStyle="#6e6e73",e.font="600 "+9*d+"px -apple-system, BlinkMacSystemFont, Inter, sans-serif",e.textAlign="right",e.textBaseline="middle",e.fillText(n,g-7*d,t+u/2)}function c(t,n){e.save(),roundRect(e,g,t,h,u,5*d),e.strokeStyle="#8e8e93",e.lineWidth=1.2,e.stroke();let s=g;for(let c=0;c<r;c++){const r=h*y[c],m=levelState(c,a,i),f=localT(c,a,i),g="done"===m?1:"unstarted"===m?0:smoothstep(1-f);e.save(),e.beginPath(),e.rect(s+1,t+1,r-2,u-2),e.clip(),"unstarted"===m?(e.fillStyle="#ececef",e.fillRect(s,t,r,u)):drawStaticNoiseBlock(e,s+1,t+1,r-2,u-2,l[c],g,800*a+17*c+31*n),e.restore(),e.fillStyle="unstarted"===m?l[c]:"#fff",e.font="600 "+8*d+"px -apple-system, BlinkMacSystemFont, Inter, sans-serif",e.textAlign="center",e.textBaseline="middle",e.fillText(o[c],s+r/2,t+u/2),s+=r}e.restore()}e.clearRect(0,0,t,n);const d=clip(n/188,1,2),u=26*d,m=8*d,f=30*d,h=Math.min(300*d,t-f-2*m),g=(t-h-f)/2+f,p=[10,80,150].map((e=>e*d)),y=[.18,.28,.54];c(p[0],0),s(p[0],"1");const E=p[0]+u+7*d;e.strokeStyle="#6e6e73",e.lineWidth=d,e.beginPath(),e.moveTo(g,E-4*d),e.lineTo(g,E),e.lineTo(g+h,E),e.lineTo(g+h,E-4*d),e.stroke(),e.fillStyle="#6e6e73",e.font="600 "+9*d+"px -apple-system, BlinkMacSystemFont, Inter, sans-serif",e.textAlign="center",e.textBaseline="top",e.fillText("channels",g+h/2,E+3*d),c(p[1],1),s(p[1],"2"),e.fillStyle="#8e8e93",e.font="600 "+20*d+"px -apple-system, BlinkMacSystemFont, Inter, sans-serif",e.textAlign="center",e.textBaseline="middle",e.fillText("\u22ee",g+h/2,130*d),c(p[2],2),s(p[2],"N")}function fitCanvas(e,t,n){const a=Math.max(1,window.devicePixelRatio||1);e.style.width=t+"px",e.style.height=n+"px",e.width=Math.round(t*a),e.height=Math.round(n*a);const i=e.getContext("2d");return i.setTransform(a,0,0,a,0,0),{ctx:i,dpr:a,cssW:t,cssH:n}}function buildTimeline(e,t,n,a){const i=1+(t-1)*e,r=7800,o=[];let l=0;const s=[0];for(let n=1;n<t;n++)s.push(n*e);s.push(i);for(let e=0;e<s.length-1;e++){const t=r*((s[e+1]-s[e])/i);if(o.push({kind:"play",tau0:s[e],tau1:s[e+1],t0:l,t1:l+t}),l+=t,e<s.length-2){const t=e+1;o.push({kind:"pause",tau:s[e+1],caption:"Initialize Level "+t+" from noise",t0:l,t1:l+n}),l+=n}}return o.push({kind:"hold",tau:i,t0:l,t1:l+a}),l+=a,{segs:o,cycle:l,tauMax:i}}function atTimeline(e,t){const n=clip(t,0,e.cycle);for(const t of e.segs)if(n>=t.t0&&n<t.t1){if("play"===t.kind){const e=(n-t.t0)/(t.t1-t.t0);return{tau:lerp(t.tau0,t.tau1,e),caption:""}}return"pause"===t.kind?{tau:t.tau,caption:t.caption}:{tau:t.tau,caption:""}}return{tau:e.tauMax,caption:""}}function timelineOffsetAtTau(e,t){const n=clip(t,0,e.tauMax);for(const t of e.segs){if("play"!==t.kind||n<t.tau0||n>t.tau1)continue;const e=(n-t.tau0)/(t.tau1-t.tau0);return lerp(t.t0,t.t1,e)}return e.cycle}async function startHero(){function e(e){if(!["loading","playing","paused"].includes(e))throw new Error("Invalid hero playback state: "+e);I=e;const t="loading"!==e,n=t&&HERO.trajectories.length>1;g.disabled=!n,y.disabled=!n,p.disabled=!t||E,p.dataset.state="playing"===e?"playing":"paused",p.setAttribute("aria-label","playing"===e?"Pause animation":"Play animation"),p.setAttribute("aria-pressed",String("playing"===e))}function t(){const e=clip(.29*window.innerHeight,260,390),t=m.parentElement;fitCanvas(m,t.clientWidth,e);const n=u.parentElement;fitCanvas(u,n.clientWidth,e);for(const e of d){const t=e.parentElement.clientWidth;fitCanvas(e,t,t)}}function n(e,t,n,a){const i=e.getContext("2d"),r=Math.max(1,window.devicePixelRatio||1),o=e.clientWidth,l=e.clientHeight;if(i.setTransform(r,0,0,r,0,0),i.clearRect(0,0,o,l),!a||"unstarted"===levelState(t,n,w))return i.imageSmoothingEnabled=!1,void i.drawImage(v,0,0,o,l);i.imageSmoothingEnabled=!0,i.imageSmoothingQuality="high",i.drawImage(a.image,t*b.frameWidth,0,b.frameWidth,b.frameHeight,0,0,o,l)}function a(e,t,a){k=e,T=t,S=a;const i=b?nearestHeroFrame(b.frames,e):null,r=Math.max(1,window.devicePixelRatio||1);d.forEach(((t,a)=>n(t,a,e,i)));const o=u.getContext("2d");o.setTransform(r,0,0,r,0,0),drawClock(o,u.clientWidth,u.clientHeight,e,w,H,HERO.labels,HERO.colors,a);const l=m.getContext("2d");l.setTransform(r,0,0,r,0,0),drawToken(l,m.clientWidth,m.clientHeight,e,w,H,HERO.labels,HERO.colors);const s=Math.round(100*clip(e/R,0,1));f&&(f.textContent=s+"%"),h&&(h.textContent=t||"Global progress"),u.setAttribute("aria-valuenow",String(s)),u.setAttribute("aria-valuetext",s+"% global progress")}function i(e){return L.has(e)||L.set(e,loadHeroFrames(HERO.trajectories[e],(e=>{b===e&&a(k,T,S)}))),L.get(e)}function r(e){return e<=.001?"Level 0 is ready to start":e<w?"Level 0 is denoising":e<2*w?"Level 1 starts from noise":e<R?"Level 2 starts from noise":"All levels are clean"}function o(){"playing"===I&&(cancelAnimationFrame(A),e("paused"))}function l(e){const t=u.getBoundingClientRect(),n=(e-t.left)/t.width*u.clientWidth,i=clockGeometry(u.clientWidth,u.clientHeight),o=clip((n-i.left)/i.trackW,0,1)*R;O=timelineOffsetAtTau(x,o),a(o,r(o),1)}function s(t){function n(e){if("playing"!==I)return;if(O=clip(e-i,0,x.cycle),O>=x.cycle){a(R,"",1);return void c((M+1)%HERO.trajectories.length).catch(console.error)}const{tau:t,caption:r}=atTimeline(x,O);a(t,r,1-clip(1-O/7e3,0,1)*(1-(.5+.5*Math.sin(O/1800*Math.PI*2-Math.PI/2)))),A=requestAnimationFrame(n)}if(!b)throw new Error("Cannot play before the hero trajectory is loaded");if(E)return;cancelAnimationFrame(A),O=clip(t,0,x.cycle);const i=performance.now()-O;e("playing"),A=requestAnimationFrame(n)}async function c(t){if(!Number.isInteger(t)||t<0||t>=HERO.trajectories.length)throw new Error("Invalid hero trajectory index: "+t);cancelAnimationFrame(A),e("loading"),M=t,b=null,O=0,v=createGaussianNoise(256,t+1),a(0,"Loading generated trajectory",1),b=await i(t),E?(await b.complete,O=x.cycle,a(R,"",1),e("paused")):(0===t&&HERO.trajectories.length>1?b.complete.then((()=>i(1))).then((e=>e.complete)).catch(console.error):b.complete.catch(console.error),a(0,"",1),s(0))}const d=HERO.labels.map(((e,t)=>document.getElementById("hero-level-"+t))),u=document.getElementById("hero-clock"),m=document.getElementById("hero-token"),f=document.getElementById("hero-tau"),h=document.getElementById("hero-status"),g=document.getElementById("hero-previous-image"),p=document.getElementById("hero-playback"),y=document.getElementById("hero-next-image");if(d.some((e=>!e))||!u||!m||!g||!p||!y)return;if(!Array.isArray(HERO.trajectories)||0===HERO.trajectories.length)throw new Error("Hero requires at least one trajectory");const E=window.matchMedia("(prefers-reduced-motion: reduce)").matches,w=HERO.g,H=HERO.nLevels,R=1+(H-1)*w,x=buildTimeline(w,H,HERO.pauseMs,HERO.holdMs);let v=createGaussianNoise(256,1),b=null,M=0,k=0,T="",S=1,O=0,A=0,I="loading";const L=new Map;t();let C=!1;u.addEventListener("pointerdown",(e=>{"loading"!==I&&(o(),C=!0,u.setPointerCapture(e.pointerId),l(e.clientX))})),u.addEventListener("pointermove",(e=>{C&&l(e.clientX)})),u.addEventListener("pointerup",(e=>{C=!1,u.releasePointerCapture(e.pointerId)})),u.addEventListener("pointercancel",(()=>{C=!1})),u.addEventListener("keydown",(e=>{if(!["ArrowLeft","ArrowRight","Home","End"].includes(e.key))return;if(e.preventDefault(),"loading"===I)return;o();let t=k;"ArrowLeft"===e.key&&(t-=.02*R),"ArrowRight"===e.key&&(t+=.02*R),"Home"===e.key&&(t=0),"End"===e.key&&(t=R),t=clip(t,0,R),O=timelineOffsetAtTau(x,t),a(t,r(t),1)})),window.addEventListener("resize",(()=>{t(),a(k,T,S)})),g.addEventListener("click",(()=>{c((M-1+HERO.trajectories.length)%HERO.trajectories.length).catch(console.error)})),p.addEventListener("click",(()=>{if("playing"!==I)if(O>=x.cycle){c((M+1)%HERO.trajectories.length).catch(console.error)}else s(O);else o()})),y.addEventListener("click",(()=>{c((M+1)%HERO.trajectories.length).catch(console.error)})),await c(0)}const HERO={g:.25,nLevels:3,imageWidth:256,imageHeight:256,imageCount:51,trajectories:["static/images/hero/trajectories/iguana/frames/","static/images/hero/trajectories/cock/frames/","static/images/hero/trajectories/lionfish/frames/","static/images/hero/trajectories/goldfish/frames/","static/images/hero/trajectories/great-grey-owl/frames/","static/images/hero/trajectories/peacock/frames/","static/images/hero/trajectories/macaw/frames/","static/images/hero/trajectories/monarch/frames/","static/images/hero/trajectories/zebra/frames/"],labels:["Level 0","Level 1","Level 2"],colors:["#2563A6","#2A9D8F","#E69F00"],pauseMs:1600,holdMs:1600},HERO_FRAME_BATCH_SIZE=6;document.addEventListener("DOMContentLoaded",(()=>{startHero().catch((()=>{}))}));
+/**
+ * APEX hero: percent clock, channel levels, and their cumulative decodes.
+ *
+ *   t_ℓ(τ) = clip(1 + ℓ·g − τ, 0, 1)
+ *   τ ∈ [0, 1 + (L−1)g]
+ *
+ * Playback pauses when Levels 1 and 2 initialize from noise.
+ */
+const HERO = {
+  g: 0.25,
+  nLevels: 3,
+  imageWidth: 256,
+  imageHeight: 256,
+  imageCount: 51,
+  trajectories: [
+    "static/images/hero/trajectories/iguana/frames/",
+    "static/images/hero/trajectories/cock/frames/",
+    "static/images/hero/trajectories/lionfish/frames/",
+    "static/images/hero/trajectories/goldfish/frames/",
+    "static/images/hero/trajectories/great-grey-owl/frames/",
+    "static/images/hero/trajectories/peacock/frames/",
+    "static/images/hero/trajectories/macaw/frames/",
+    "static/images/hero/trajectories/monarch/frames/",
+    "static/images/hero/trajectories/zebra/frames/",
+  ],
+  labels: ["Level 0", "Level 1", "Level 2"],
+  colors: ["#2563A6", "#2A9D8F", "#E69F00"],
+  pauseMs: 1600,
+  holdMs: 1600,
+};
+const HERO_FRAME_BATCH_SIZE = 6;
+
+function clip(x, lo, hi) {
+  return Math.min(hi, Math.max(lo, x));
+}
+
+function smoothstep(p) {
+  const x = clip(p, 0, 1);
+  return x * x * (3 - 2 * x);
+}
+
+function localT(level, tau, g) {
+  return clip(1 + level * g - tau, 0, 1);
+}
+
+function levelState(level, tau, g) {
+  if (tau <= level * g) return "unstarted";
+  if (tau >= 1 + level * g) return "done";
+  return "denoising";
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("Failed to load " + src));
+    img.src = src;
+  });
+}
+
+async function loadHeroFrame(frameRootUrl, index, tauMax) {
+  const source = new URL(String(index).padStart(3, "0") + ".webp", frameRootUrl);
+  const image = await loadImage(source.href);
+  if (image.naturalWidth !== HERO.imageWidth * HERO.nLevels || image.naturalHeight !== HERO.imageHeight) {
+    throw new Error("Invalid hero image dimensions: " + source);
+  }
+  return {
+    tau: (index / (HERO.imageCount - 1)) * tauMax,
+    image,
+  };
+}
+
+async function loadHeroFrames(frameRoot, onBatchLoaded) {
+  const frameRootUrl = new URL(frameRoot, window.location.href);
+  const tauMax = 1 + (HERO.nLevels - 1) * HERO.g;
+  const trajectory = {
+    frameWidth: HERO.imageWidth,
+    frameHeight: HERO.imageHeight,
+    frames: [await loadHeroFrame(frameRootUrl, 0, tauMax)],
+  };
+  trajectory.complete = (async () => {
+    if (document.readyState !== "complete") {
+      await new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
+    }
+    for (let firstIndex = 1; firstIndex < HERO.imageCount; firstIndex += HERO_FRAME_BATCH_SIZE) {
+      const endIndex = Math.min(firstIndex + HERO_FRAME_BATCH_SIZE, HERO.imageCount);
+      const batch = await Promise.all(
+        Array.from({ length: endIndex - firstIndex }, (_, offset) => loadHeroFrame(frameRootUrl, firstIndex + offset, tauMax))
+      );
+      trajectory.frames.push(...batch);
+      onBatchLoaded(trajectory);
+    }
+    return trajectory;
+  })();
+  return trajectory;
+}
+
+function nearestHeroFrame(frames, tau) {
+  let nearest = frames[0];
+  let nearestDistance = Math.abs(tau - nearest.tau);
+  for (let index = 1; index < frames.length; index++) {
+    const distance = Math.abs(tau - frames[index].tau);
+    if (distance < nearestDistance) {
+      nearest = frames[index];
+      nearestDistance = distance;
+    }
+  }
+  return nearest;
+}
+
+function createGaussianNoise(size, patternKey) {
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  const image = ctx.createImageData(size, size);
+  let state = patternKey >>> 0;
+
+  function randomUnit() {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return (state + 1) / 4294967297;
+  }
+
+  for (let index = 0; index < image.data.length; index += 4) {
+    const radius = Math.sqrt(-2 * Math.log(randomUnit()));
+    const gaussian = radius * Math.cos(2 * Math.PI * randomUnit());
+    const value = Math.round(clip(128 + gaussian * 47, 0, 255));
+    image.data[index] = value;
+    image.data[index + 1] = value;
+    image.data[index + 2] = value;
+    image.data[index + 3] = 255;
+  }
+  ctx.putImageData(image, 0, 0);
+  return canvas;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  const rr = Math.min(r, Math.max(0, w / 2), Math.max(0, h / 2));
+  ctx.beginPath();
+  ctx.moveTo(x + rr, y);
+  ctx.arcTo(x + w, y, x + w, y + h, rr);
+  ctx.arcTo(x + w, y + h, x, y + h, rr);
+  ctx.arcTo(x, y + h, x, y, rr);
+  ctx.arcTo(x, y, x + w, y, rr);
+  ctx.closePath();
+}
+
+function hexToRgb(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+
+function mixRgb(a, b, t) {
+  return {
+    r: Math.round(lerp(a.r, b.r, t)),
+    g: Math.round(lerp(a.g, b.g, t)),
+    b: Math.round(lerp(a.b, b.b, t)),
+  };
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function rgbStr(c) {
+  return "rgb(" + c.r + "," + c.g + "," + c.b + ")";
+}
+
+function clockGeometry(cssW, cssH) {
+  const scale = clip(cssH / 188, 1, 2);
+  const left = 70 * scale;
+  const right = cssW - 12 * scale;
+  return {
+    scale,
+    left,
+    right,
+    trackW: right - left,
+    top: 22 * scale,
+  };
+}
+
+function drawClock(ctx, cssW, cssH, tau, g, n, labels, colors, handlePulse) {
+  ctx.clearRect(0, 0, cssW, cssH);
+  const tauMax = 1 + (n - 1) * g;
+  const pct = clip(tau / tauMax, 0, 1);
+  const { scale, left, right, trackW, top } = clockGeometry(cssW, cssH);
+  const rowH = (cssH - top - 6 * scale) / n;
+  const barH = 16 * scale;
+
+  ctx.fillStyle = "#6e6e73";
+  ctx.font = "600 " + 12 * scale + "px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText("0%", left, 14 * scale);
+  ctx.textAlign = "center";
+  ctx.fillText("50%", left + trackW / 2, 14 * scale);
+  ctx.textAlign = "right";
+  ctx.fillText("100%", right, 14 * scale);
+
+  ctx.strokeStyle = "#e2e2e7";
+  ctx.lineWidth = scale;
+  [0, 0.5, 1].forEach((p) => {
+    const x = left + p * trackW;
+    ctx.beginPath();
+    ctx.moveTo(x, top);
+    ctx.lineTo(x, cssH - 18 * scale);
+    ctx.stroke();
+  });
+
+  const px = left + pct * trackW;
+  for (let l = 0; l < n; l++) {
+    const y = top + rowH * l + rowH / 2;
+    ctx.font = "600 " + 13 * scale + "px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+    ctx.fillStyle = colors[l];
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    ctx.fillText(labels[l], left - 10 * scale, y);
+
+    const start = l * g;
+    const end = 1 + l * g;
+    const xStart = left + (start / tauMax) * trackW;
+    const xEnd = left + (Math.min(end, tauMax) / tauMax) * trackW;
+
+    roundRect(ctx, left, y - barH / 2, trackW, barH, 8 * scale);
+    ctx.fillStyle = "#ececef";
+    ctx.fill();
+
+    const denW = Math.max(0, xEnd - xStart);
+    if (denW > 0) {
+      const rgb = hexToRgb(colors[l]);
+      ctx.fillStyle = rgbStr(mixRgb({ r: 255, g: 255, b: 255 }, rgb, 0.24));
+      roundRect(ctx, xStart, y - barH / 2, denW, barH, 8 * scale);
+      ctx.fill();
+
+      const fillEnd = clip(px, xStart, xEnd);
+      const fillWidth = fillEnd - xStart;
+      if (fillWidth <= 0) continue;
+      const grad = ctx.createLinearGradient(xStart, 0, Math.max(xStart + 1, fillEnd), 0);
+      grad.addColorStop(0, rgbStr(mixRgb({ r: 255, g: 255, b: 255 }, rgb, 0.5)));
+      grad.addColorStop(1, colors[l]);
+      ctx.fillStyle = grad;
+      roundRect(ctx, xStart, y - barH / 2, fillWidth, barH, 8 * scale);
+      ctx.fill();
+    }
+  }
+
+  const knobWidth = 14 * scale;
+  const knobHeight = 13 * scale;
+  const knobBottom = cssH - 2 * scale;
+  const knobTop = knobBottom - knobHeight;
+  const pointerTipY = knobTop - 7 * scale;
+
+  ctx.strokeStyle = "#1d1d1f";
+  ctx.lineWidth = 2 * scale;
+  ctx.beginPath();
+  ctx.moveTo(px, top - 2 * scale);
+  ctx.lineTo(px, pointerTipY);
+  ctx.stroke();
+
+  ctx.save();
+  ctx.globalAlpha = 0.68 + 0.32 * handlePulse;
+  ctx.fillStyle = "#6e6e73";
+  ctx.beginPath();
+  ctx.moveTo(px, pointerTipY);
+  ctx.lineTo(px - 5 * scale, knobTop + scale);
+  ctx.lineTo(px + 5 * scale, knobTop + scale);
+  ctx.closePath();
+  ctx.fill();
+  roundRect(ctx, px - knobWidth / 2, knobTop, knobWidth, knobHeight, 2.5 * scale);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawToken(ctx, cssW, cssH, tau, g, n, labels, colors) {
+  ctx.clearRect(0, 0, cssW, cssH);
+  const scale = clip(cssH / 188, 1, 2);
+  const barH = 26 * scale;
+  const outer = 8 * scale;
+  const indexWidth = 30 * scale;
+  const tokenW = Math.min(300 * scale, cssW - indexWidth - outer * 2);
+  const tokenX = (cssW - tokenW - indexWidth) / 2 + indexWidth;
+  const tokenYs = [10, 80, 150].map((value) => value * scale);
+  const widths = [0.18, 0.28, 0.54];
+
+  function drawTokenIndex(y, label) {
+    ctx.fillStyle = "#6e6e73";
+    ctx.font = "600 " + 9 * scale + "px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    ctx.fillText(label, tokenX - 7 * scale, y + barH / 2);
+  }
+
+  function drawOneToken(y, index) {
+    ctx.save();
+    roundRect(ctx, tokenX, y, tokenW, barH, 5 * scale);
+    ctx.strokeStyle = "#8e8e93";
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    let bandX = tokenX;
+    for (let l = 0; l < n; l++) {
+      const bandW = tokenW * widths[l];
+      const state = levelState(l, tau, g);
+      const t = localT(l, tau, g);
+      const clean = state === "done" ? 1 : state === "unstarted" ? 0 : smoothstep(1 - t);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(bandX + 1, y + 1, bandW - 2, barH - 2);
+      ctx.clip();
+      if (state === "unstarted") {
+        ctx.fillStyle = "#ececef";
+        ctx.fillRect(bandX, y, bandW, barH);
+      } else {
+        drawStaticNoiseBlock(ctx, bandX + 1, y + 1, bandW - 2, barH - 2, colors[l], clean, tau * 800 + l * 17 + index * 31);
+      }
+      ctx.restore();
+      ctx.fillStyle = state === "unstarted" ? colors[l] : "#fff";
+      ctx.font = "600 " + 8 * scale + "px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(labels[l], bandX + bandW / 2, y + barH / 2);
+      bandX += bandW;
+    }
+    ctx.restore();
+  }
+
+  drawOneToken(tokenYs[0], 0);
+  drawTokenIndex(tokenYs[0], "1");
+  const bracketY = tokenYs[0] + barH + 7 * scale;
+  ctx.strokeStyle = "#6e6e73";
+  ctx.lineWidth = scale;
+  ctx.beginPath();
+  ctx.moveTo(tokenX, bracketY - 4 * scale);
+  ctx.lineTo(tokenX, bracketY);
+  ctx.lineTo(tokenX + tokenW, bracketY);
+  ctx.lineTo(tokenX + tokenW, bracketY - 4 * scale);
+  ctx.stroke();
+  ctx.fillStyle = "#6e6e73";
+  ctx.font = "600 " + 9 * scale + "px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  ctx.fillText("channels", tokenX + tokenW / 2, bracketY + 3 * scale);
+
+  drawOneToken(tokenYs[1], 1);
+  drawTokenIndex(tokenYs[1], "2");
+  ctx.fillStyle = "#8e8e93";
+  ctx.font = "600 " + 20 * scale + "px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("⋮", tokenX + tokenW / 2, 130 * scale);
+  drawOneToken(tokenYs[2], 2);
+  drawTokenIndex(tokenYs[2], "N");
+}
+
+function fitCanvas(canvas, cssW, cssH) {
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  canvas.style.width = cssW + "px";
+  canvas.style.height = cssH + "px";
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, dpr, cssW, cssH };
+}
+
+function buildTimeline(g, n, pauseMs, holdMs) {
+  const tauMax = 1 + (n - 1) * g;
+  const motionMs = 7800;
+  const segs = [];
+  let wall = 0;
+  const knots = [0];
+  for (let l = 1; l < n; l++) knots.push(l * g);
+  knots.push(tauMax);
+
+  for (let i = 0; i < knots.length - 1; i++) {
+    const span = knots[i + 1] - knots[i];
+    const dur = motionMs * (span / tauMax);
+    segs.push({ kind: "play", tau0: knots[i], tau1: knots[i + 1], t0: wall, t1: wall + dur });
+    wall += dur;
+    if (i < knots.length - 2) {
+      const lvl = i + 1;
+      segs.push({
+        kind: "pause",
+        tau: knots[i + 1],
+        caption: "Initialize Level " + lvl + " from noise",
+        t0: wall,
+        t1: wall + pauseMs,
+      });
+      wall += pauseMs;
+    }
+  }
+  segs.push({ kind: "hold", tau: tauMax, t0: wall, t1: wall + holdMs });
+  wall += holdMs;
+  return { segs, cycle: wall, tauMax };
+}
+
+function atTimeline(tl, elapsed) {
+  const t = clip(elapsed, 0, tl.cycle);
+  for (const s of tl.segs) {
+    if (t >= s.t0 && t < s.t1) {
+      if (s.kind === "play") {
+        const u = (t - s.t0) / (s.t1 - s.t0);
+        return { tau: lerp(s.tau0, s.tau1, u), caption: "" };
+      }
+      if (s.kind === "pause") return { tau: s.tau, caption: s.caption };
+      return { tau: s.tau, caption: "" };
+    }
+  }
+  return { tau: tl.tauMax, caption: "" };
+}
+
+function timelineOffsetAtTau(tl, tau) {
+  const targetTau = clip(tau, 0, tl.tauMax);
+  for (const segment of tl.segs) {
+    if (segment.kind !== "play" || targetTau < segment.tau0 || targetTau > segment.tau1) continue;
+    const progress = (targetTau - segment.tau0) / (segment.tau1 - segment.tau0);
+    return lerp(segment.t0, segment.t1, progress);
+  }
+  return tl.cycle;
+}
+
+async function startHero() {
+  const outputCanvases = HERO.labels.map((_, level) => document.getElementById("hero-level-" + level));
+  const clockCanvas = document.getElementById("hero-clock");
+  const tokenCanvas = document.getElementById("hero-token");
+  const tauLabel = document.getElementById("hero-tau");
+  const statusEl = document.getElementById("hero-status");
+  const previousImageButton = document.getElementById("hero-previous-image");
+  const playbackButton = document.getElementById("hero-playback");
+  const nextImageButton = document.getElementById("hero-next-image");
+  if (outputCanvases.some((canvas) => !canvas) || !clockCanvas || !tokenCanvas || !previousImageButton || !playbackButton || !nextImageButton) {
+    return;
+  }
+  if (!Array.isArray(HERO.trajectories) || HERO.trajectories.length === 0) {
+    throw new Error("Hero requires at least one trajectory");
+  }
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const g = HERO.g;
+  const n = HERO.nLevels;
+  const tauMax = 1 + (n - 1) * g;
+  const tl = buildTimeline(g, n, HERO.pauseMs, HERO.holdMs);
+  let gaussianNoise = createGaussianNoise(256, 1);
+  let trajectory = null;
+  let trajectoryIndex = 0;
+  let lastTau = 0;
+  let lastCaption = "";
+  let lastHandlePulse = 1;
+  let lastTimelineMs = 0;
+  let raf = 0;
+  let playbackState = "loading";
+  const trajectoryLoads = new Map();
+
+  function setPlaybackState(state) {
+    if (!["loading", "playing", "paused"].includes(state)) {
+      throw new Error("Invalid hero playback state: " + state);
+    }
+    playbackState = state;
+    const ready = state !== "loading";
+    const canChangeImage = ready && HERO.trajectories.length > 1;
+    previousImageButton.disabled = !canChangeImage;
+    nextImageButton.disabled = !canChangeImage;
+    playbackButton.disabled = !ready || reduced;
+    playbackButton.dataset.state = state === "playing" ? "playing" : "paused";
+    playbackButton.setAttribute("aria-label", state === "playing" ? "Pause animation" : "Play animation");
+    playbackButton.setAttribute("aria-pressed", String(state === "playing"));
+  }
+
+  function layout() {
+    const targetHeight = clip(window.innerHeight * 0.29, 260, 390);
+    const tokenWrap = tokenCanvas.parentElement;
+    fitCanvas(tokenCanvas, tokenWrap.clientWidth, targetHeight);
+    const clockWrap = clockCanvas.parentElement;
+    fitCanvas(clockCanvas, clockWrap.clientWidth, targetHeight);
+    for (const canvas of outputCanvases) {
+      const cardWidth = canvas.parentElement.clientWidth;
+      fitCanvas(canvas, cardWidth, cardWidth);
+    }
+  }
+
+  layout();
+
+  function drawOutput(canvas, level, tau, frame) {
+    const ctx = canvas.getContext("2d");
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, width, height);
+
+    if (!frame || levelState(level, tau, g) === "unstarted") {
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(gaussianNoise, 0, 0, width, height);
+      return;
+    }
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(frame.image, level * trajectory.frameWidth, 0, trajectory.frameWidth, trajectory.frameHeight, 0, 0, width, height);
+  }
+
+  function render(tau, caption, handlePulse) {
+    lastTau = tau;
+    lastCaption = caption;
+    lastHandlePulse = handlePulse;
+    const frame = trajectory ? nearestHeroFrame(trajectory.frames, tau) : null;
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    outputCanvases.forEach((canvas, level) => drawOutput(canvas, level, tau, frame));
+
+    const clock = clockCanvas.getContext("2d");
+    clock.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawClock(clock, clockCanvas.clientWidth, clockCanvas.clientHeight, tau, g, n, HERO.labels, HERO.colors, handlePulse);
+
+    const tok = tokenCanvas.getContext("2d");
+    tok.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawToken(tok, tokenCanvas.clientWidth, tokenCanvas.clientHeight, tau, g, n, HERO.labels, HERO.colors);
+
+    const pct = Math.round(clip(tau / tauMax, 0, 1) * 100);
+    if (tauLabel) tauLabel.textContent = pct + "%";
+    if (statusEl) statusEl.textContent = caption || "Global progress";
+    clockCanvas.setAttribute("aria-valuenow", String(pct));
+    clockCanvas.setAttribute("aria-valuetext", pct + "% global progress");
+  }
+
+  function loadTrajectory(index) {
+    if (!trajectoryLoads.has(index)) {
+      trajectoryLoads.set(
+        index,
+        loadHeroFrames(HERO.trajectories[index], (loadedTrajectory) => {
+          if (trajectory === loadedTrajectory) render(lastTau, lastCaption, lastHandlePulse);
+        })
+      );
+    }
+    return trajectoryLoads.get(index);
+  }
+
+  function scrubCaption(tau) {
+    if (tau <= 0.001) return "Level 0 is ready to start";
+    if (tau < g) return "Level 0 is denoising";
+    if (tau < 2 * g) return "Level 1 starts from noise";
+    if (tau < tauMax) return "Level 2 starts from noise";
+    return "All levels are clean";
+  }
+
+  function pausePlayback() {
+    if (playbackState !== "playing") return;
+    cancelAnimationFrame(raf);
+    setPlaybackState("paused");
+  }
+
+  function scrubAt(clientX) {
+    const bounds = clockCanvas.getBoundingClientRect();
+    const canvasX = ((clientX - bounds.left) / bounds.width) * clockCanvas.clientWidth;
+    const geometry = clockGeometry(clockCanvas.clientWidth, clockCanvas.clientHeight);
+    const progress = clip((canvasX - geometry.left) / geometry.trackW, 0, 1);
+    const tau = progress * tauMax;
+    lastTimelineMs = timelineOffsetAtTau(tl, tau);
+    render(tau, scrubCaption(tau), 1);
+  }
+
+  let dragging = false;
+  clockCanvas.addEventListener("pointerdown", (event) => {
+    if (playbackState === "loading") return;
+    pausePlayback();
+    dragging = true;
+    clockCanvas.setPointerCapture(event.pointerId);
+    scrubAt(event.clientX);
+  });
+  clockCanvas.addEventListener("pointermove", (event) => {
+    if (dragging) scrubAt(event.clientX);
+  });
+  clockCanvas.addEventListener("pointerup", (event) => {
+    dragging = false;
+    clockCanvas.releasePointerCapture(event.pointerId);
+  });
+  clockCanvas.addEventListener("pointercancel", () => {
+    dragging = false;
+  });
+  clockCanvas.addEventListener("keydown", (event) => {
+    const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+    if (!keys.includes(event.key)) return;
+    event.preventDefault();
+    if (playbackState === "loading") return;
+    pausePlayback();
+    let tau = lastTau;
+    if (event.key === "ArrowLeft") tau -= tauMax * 0.02;
+    if (event.key === "ArrowRight") tau += tauMax * 0.02;
+    if (event.key === "Home") tau = 0;
+    if (event.key === "End") tau = tauMax;
+    tau = clip(tau, 0, tauMax);
+    lastTimelineMs = timelineOffsetAtTau(tl, tau);
+    render(tau, scrubCaption(tau), 1);
+  });
+
+  window.addEventListener("resize", () => {
+    layout();
+    render(lastTau, lastCaption, lastHandlePulse);
+  });
+
+  function startPlayback(timelineMs) {
+    if (!trajectory) throw new Error("Cannot play before the hero trajectory is loaded");
+    if (reduced) return;
+    cancelAnimationFrame(raf);
+    lastTimelineMs = clip(timelineMs, 0, tl.cycle);
+    const playbackStart = performance.now() - lastTimelineMs;
+    setPlaybackState("playing");
+
+    function tick(now) {
+      if (playbackState !== "playing") return;
+      lastTimelineMs = clip(now - playbackStart, 0, tl.cycle);
+      if (lastTimelineMs >= tl.cycle) {
+        render(tauMax, "", 1);
+        const nextIndex = (trajectoryIndex + 1) % HERO.trajectories.length;
+        showTrajectory(nextIndex).catch(console.error);
+        return;
+      }
+      const { tau, caption } = atTimeline(tl, lastTimelineMs);
+      const attention = clip(1 - lastTimelineMs / 7000, 0, 1);
+      const wave = 0.5 + 0.5 * Math.sin((lastTimelineMs / 1800) * Math.PI * 2 - Math.PI / 2);
+      const handlePulse = 1 - attention * (1 - wave);
+      render(tau, caption, handlePulse);
+      raf = requestAnimationFrame(tick);
+    }
+
+    raf = requestAnimationFrame(tick);
+  }
+
+  async function showTrajectory(index) {
+    if (!Number.isInteger(index) || index < 0 || index >= HERO.trajectories.length) {
+      throw new Error("Invalid hero trajectory index: " + index);
+    }
+    cancelAnimationFrame(raf);
+    setPlaybackState("loading");
+    trajectoryIndex = index;
+    trajectory = null;
+    lastTimelineMs = 0;
+    gaussianNoise = createGaussianNoise(256, index + 1);
+    render(0, "Loading generated trajectory", 1);
+    trajectory = await loadTrajectory(index);
+
+    if (reduced) {
+      await trajectory.complete;
+      lastTimelineMs = tl.cycle;
+      render(tauMax, "", 1);
+      setPlaybackState("paused");
+    } else {
+      if (index === 0 && HERO.trajectories.length > 1) {
+        trajectory.complete
+          .then(() => loadTrajectory(1))
+          .then((nextTrajectory) => nextTrajectory.complete)
+          .catch(console.error);
+      } else {
+        trajectory.complete.catch(console.error);
+      }
+      render(0, "", 1);
+      startPlayback(0);
+    }
+  }
+
+  previousImageButton.addEventListener("click", () => {
+    const previousIndex = (trajectoryIndex - 1 + HERO.trajectories.length) % HERO.trajectories.length;
+    showTrajectory(previousIndex).catch(console.error);
+  });
+  playbackButton.addEventListener("click", () => {
+    if (playbackState === "playing") {
+      pausePlayback();
+      return;
+    }
+    if (lastTimelineMs >= tl.cycle) {
+      const nextIndex = (trajectoryIndex + 1) % HERO.trajectories.length;
+      showTrajectory(nextIndex).catch(console.error);
+      return;
+    }
+    startPlayback(lastTimelineMs);
+  });
+  nextImageButton.addEventListener("click", () => {
+    const nextIndex = (trajectoryIndex + 1) % HERO.trajectories.length;
+    showTrajectory(nextIndex).catch(console.error);
+  });
+
+  await showTrajectory(0);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  startHero().catch((err) => {
+    console.error(err);
+  });
+});
