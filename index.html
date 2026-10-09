@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="David Dinkevich is a PhD student at the Hebrew University of Jerusalem researching diffusion models for images and video."
+    />
+    <meta name="author" content="David Dinkevich" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="David Dinkevich" />
+    <meta property="og:description" content="Research on efficient representations and controllable generation with diffusion models." />
+    <meta property="og:url" content="https://daviddinkevich.github.io/" />
+    <meta property="og:image" content="https://daviddinkevich.github.io/static/images/social-card.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Three APEX decode levels of a lionfish" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="David Dinkevich" />
+    <meta name="twitter:description" content="Research on efficient representations and controllable generation with diffusion models." />
+    <meta name="twitter:image" content="https://daviddinkevich.github.io/static/images/social-card.jpg" />
+    <meta name="twitter:image:alt" content="Three APEX decode levels of a lionfish" />
+
+    <link rel="canonical" href="https://daviddinkevich.github.io/" />
+    <link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/css/index.css" />
+
+    <title>David Dinkevich</title>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "David Dinkevich",
+        "url": "https://daviddinkevich.github.io/",
+        "image": "https://daviddinkevich.github.io/static/images/david-dinkevich.jpg",
+        "jobTitle": "PhD Student",
+        "affiliation": {
+          "@type": "CollegeOrUniversity",
+          "name": "The Hebrew University of Jerusalem"
+        },
+        "sameAs": [
+          "https://github.com/daviddinkevich",
+          "https://www.linkedin.com/in/david-dinkevich/",
+          "https://scholar.google.com/citations?user=Y-_RbNAAAAAJ"
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#publications">Skip to publications</a>
+
+    <main class="page-shell">
+      <section class="profile" aria-labelledby="page-title">
+        <div class="profile__portrait">
+          <img src="/static/images/david-dinkevich.jpg" width="433" height="509" alt="David Dinkevich" fetchpriority="high" />
+        </div>
+
+        <div class="profile__content">
+          <p class="profile__eyebrow">PhD student · Diffusion models</p>
+          <h1 id="page-title">David <span>Dinkevich</span></h1>
+          <p>
+            I’m a PhD student at the Hebrew University of Jerusalem, advised by
+            <a href="https://www.cs.huji.ac.il/~danix/">Prof. Dani Lischinski</a>. I work on diffusion models for images and video, with a focus on
+            efficient representations and controllable generation.
+          </p>
+          <p>
+            My recent work includes <a href="/APEX/">APEX</a>, which enables diffusion in extremely compressed latent spaces, and
+            <a href="https://daviddinkevich.github.io/Story2Board/">Story2Board</a>, a training-free approach for generating coherent, expressive
+            storyboards.
+          </p>
+
+          <nav class="profile-links" aria-label="Profile links">
+            <a href="https://scholar.google.com/citations?user=Y-_RbNAAAAAJ">Scholar</a>
+            <a href="https://github.com/daviddinkevich">GitHub</a>
+            <a href="https://www.linkedin.com/in/david-dinkevich/">LinkedIn</a>
+            <a href="mailto:david.dinkevich@gmail.com">Email</a>
+          </nav>
+        </div>
+      </section>
+
+      <div class="section-divider" aria-hidden="true"></div>
+
+      <section id="publications" class="publications" aria-labelledby="publications-title">
+        <header class="section-heading">
+          <p class="section-heading__eyebrow">Selected research</p>
+          <h2 id="publications-title">Publications</h2>
+        </header>
+
+        <div class="publication-list">
+          <article class="publication-card" data-preview-card>
+            <a class="publication-preview" href="/APEX/" aria-label="Visit the APEX project page">
+              <img
+                src="/static/images/apex-poster.webp"
+                data-static-src="/static/images/apex-poster.webp"
+                data-animated-src="/static/images/apex-preview.webp"
+                width="640"
+                height="213"
+                alt="Level 0, Level 1, and Level 2 APEX decodes of a lionfish"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="publication-preview__hint" aria-hidden="true">Animated preview</span>
+            </a>
+
+            <div class="publication-copy">
+              <div class="publication-meta">
+                <span class="venue">Preprint, 2026</span>
+              </div>
+              <h3><a href="/APEX/">APEX: Asynchronous Prefix Denoising for Extreme Compression</a></h3>
+              <p class="authors">
+                <strong>David Dinkevich</strong>, Nisan Chiprut, Yoav HaCohen, and
+                <a href="https://www.cs.huji.ac.il/~danix/">Dani Lischinski</a>
+              </p>
+              <p class="publication-summary">
+                A hierarchical latent space and asynchronous denoising scheme that makes extreme spatial compression practical for diffusion models.
+              </p>
+              <div class="publication-actions">
+                <button class="action-link abstract-toggle" type="button" aria-expanded="false" aria-controls="abstract-apex">
+                  Abstract
+                  <span aria-hidden="true">⌄</span>
+                </button>
+                <a class="action-link" href="/APEX/">Project page</a>
+                <a class="action-link" href="/APEX/static/pdfs/apex_paper.pdf" aria-label="APEX paper PDF, 39 megabytes">Paper</a>
+              </div>
+            </div>
+
+            <div class="abstract-panel" id="abstract-apex" hidden>
+              <p class="abstract-panel__label">Abstract</p>
+              <p>
+                Fewer latent tokens promise cheaper diffusion. Yet aggressive latent compression creates a reconstruction-generation dilemma: adding
+                channels improves reconstruction but makes generation harder. We introduce APEX, short for Asynchronous Prefix denoising for EXtreme
+                compression, which pairs a hierarchical latent space with asynchronous denoising over channel groups. Our autoencoder orders channel
+                prefixes from structure to detail, while one shared denoiser generates them at staggered local times without adding tokens. On
+                ImageNet-512, APEX outperforms existing methods at every evaluated channel count under 64× and 128× compression. At matched training
+                and guided sampling compute, it also outperforms a 256-token model at every evaluated budget, with larger gains at lower compute.
+              </p>
+            </div>
+          </article>
+
+          <article class="publication-card" data-preview-card>
+            <a class="publication-preview" href="https://daviddinkevich.github.io/Story2Board/" aria-label="Visit the Story2Board project page">
+              <img
+                src="/static/images/story2board-poster.webp"
+                data-static-src="/static/images/story2board-poster.webp"
+                data-animated-src="/static/images/story2board-preview.gif"
+                width="512"
+                height="256"
+                alt="An animated sequence of expressive storyboard panels"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="publication-preview__hint" aria-hidden="true">Animated preview</span>
+            </a>
+
+            <div class="publication-copy">
+              <div class="publication-meta">
+                <span class="venue">Eurographics, 2026</span>
+              </div>
+              <h3>
+                <a href="https://daviddinkevich.github.io/Story2Board/">Story2Board: A Training-Free Approach for Expressive Visual Storytelling</a>
+              </h3>
+              <p class="authors">
+                <strong>David Dinkevich</strong>, <a href="https://levymsn.github.io/">Matan Levy</a>,
+                <a href="https://omriavrahami.com/">Omri Avrahami</a>, <a href="https://github.com/dvirsamuel">Dvir Samuel</a>, and
+                <a href="https://www.cs.huji.ac.il/~danix/">Dani Lischinski</a>
+              </p>
+              <p class="publication-summary">
+                A training-free method that turns natural-language stories into coherent, expressive storyboards while preserving character identity
+                and scene diversity.
+              </p>
+              <div class="publication-actions">
+                <button class="action-link abstract-toggle" type="button" aria-expanded="false" aria-controls="abstract-story2board">
+                  Abstract
+                  <span aria-hidden="true">⌄</span>
+                </button>
+                <a class="action-link" href="https://daviddinkevich.github.io/Story2Board/">Project page</a>
+                <a class="action-link" href="https://doi.org/10.1111/cgf.70319">Paper</a>
+                <a class="action-link" href="https://arxiv.org/abs/2508.09983">arXiv</a>
+                <a class="action-link" href="https://github.com/daviddinkevich/Story2Board">Code</a>
+              </div>
+            </div>
+
+            <div class="abstract-panel" id="abstract-story2board" hidden>
+              <p class="abstract-panel__label">Abstract</p>
+              <p>
+                Story2Board is a training-free framework for expressive storyboard generation from natural language. It addresses spatial composition,
+                background evolution, and narrative pacing in addition to subject identity. We introduce a lightweight consistency framework composed
+                of Latent Panel Anchoring, which preserves a shared character reference across panels, and Reciprocal Attention Value Mixing, which
+                softly blends visual features between token pairs with strong reciprocal attention. Together, these mechanisms enhance coherence
+                without architectural changes or fine-tuning, enabling state-of-the-art diffusion models to generate visually diverse yet consistent
+                storyboards. We use an off-the-shelf language model to convert free-form stories into grounded panel-level prompts. We also introduce
+                the Rich Storyboard Benchmark and a Scene Diversity metric for evaluating layout variation and background-grounded storytelling
+                alongside consistency.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© 2026 David Dinkevich</p>
+    </footer>
+
+    <script src="/static/js/index.js" defer></script>
+  </body>
+</html>

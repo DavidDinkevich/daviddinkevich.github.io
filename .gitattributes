@@ -1,2 +1,12 @@
-# Force LF line endings, needed for Docker to work on Windows
-*.sh text eol=lf
+* text=auto
+*.css text eol=lf
+*.html text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.gif binary
+*.jpg binary
+*.pdf binary
+*.png binary
+*.webp binary
