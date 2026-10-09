@@ -92,19 +92,19 @@
         </header>
 
         <div class="publication-list">
-          <article class="publication-card" data-preview-card>
+          <article class="publication-card">
             <a class="publication-preview" href="/APEX/" aria-label="Visit the APEX project page">
-              <img
-                src="/static/images/apex-poster.webp"
-                data-static-src="/static/images/apex-poster.webp"
-                data-animated-src="/static/images/apex-preview.webp"
-                width="640"
-                height="213"
-                alt="Level 0, Level 1, and Level 2 APEX decodes of a lionfish"
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="publication-preview__hint" aria-hidden="true">Animated preview</span>
+              <picture>
+                <source media="(prefers-reduced-motion: reduce)" srcset="/static/images/apex-poster.webp" />
+                <img
+                  src="/static/images/apex-preview.webp"
+                  width="640"
+                  height="213"
+                  alt="Level 0, Level 1, and Level 2 APEX decodes of a lionfish"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
             </a>
 
             <div class="publication-copy">
@@ -143,19 +143,19 @@
             </div>
           </article>
 
-          <article class="publication-card" data-preview-card>
+          <article class="publication-card">
             <a class="publication-preview" href="https://daviddinkevich.github.io/Story2Board/" aria-label="Visit the Story2Board project page">
-              <img
-                src="/static/images/story2board-poster.webp"
-                data-static-src="/static/images/story2board-poster.webp"
-                data-animated-src="/static/images/story2board-preview.gif"
-                width="512"
-                height="256"
-                alt="An animated sequence of expressive storyboard panels"
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="publication-preview__hint" aria-hidden="true">Animated preview</span>
+              <picture>
+                <source media="(prefers-reduced-motion: reduce)" srcset="/static/images/story2board-poster.webp" />
+                <img
+                  src="/static/images/story2board-preview.gif"
+                  width="512"
+                  height="256"
+                  alt="An animated sequence of expressive storyboard panels"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
             </a>
 
             <div class="publication-copy">
