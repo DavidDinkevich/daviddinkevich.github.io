@@ -188,13 +188,7 @@ function drawSampleTransfer(ctx, from, to, progress) {
   ctx.setLineDash([]);
   ctx.fillStyle = INK;
   ctx.beginPath();
-  ctx.arc(
-    lerp(from.sampleX, to.sampleX, amount),
-    lerp(from.axisY, to.axisY, amount),
-    4.5,
-    0,
-    Math.PI * 2
-  );
+  ctx.arc(lerp(from.sampleX, to.sampleX, amount), lerp(from.axisY, to.axisY, amount), 4.5, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 }
@@ -205,8 +199,8 @@ function drawNoiseDensityBlock(ctx, x, y, width, height, density, seed) {
   const image = ctx.createImageData(imageWidth, imageHeight);
   for (let index = 0; index < image.data.length; index += 4) {
     const pixel = index / 4;
-    const sample = ((Math.sin((pixel + seed) * 12.9898) * 43758.5453) % 1 + 1) % 1;
-    const shadeSample = ((Math.sin((pixel + seed) * 78.233) * 12345.6789) % 1 + 1) % 1;
+    const sample = (((Math.sin((pixel + seed) * 12.9898) * 43758.5453) % 1) + 1) % 1;
+    const shadeSample = (((Math.sin((pixel + seed) * 78.233) * 12345.6789) % 1) + 1) % 1;
     const shade = sample < density ? Math.round(shadeSample * 190) : 245;
     image.data[index] = shade;
     image.data[index + 1] = shade;
@@ -240,11 +234,7 @@ function drawLatentSegment(ctx, x, y, width, height, level, noiseAmount, heldOut
   ctx.globalAlpha = alpha;
   const useLightText = !heldOut && (!neutralNoise || level === 1);
   ctx.fillStyle = useLightText ? "#fff" : INK;
-  ctx.shadowColor = heldOut
-    ? "transparent"
-    : useLightText
-      ? "rgba(0,0,0,0.75)"
-      : "rgba(255,255,255,0.9)";
+  ctx.shadowColor = heldOut ? "transparent" : useLightText ? "rgba(0,0,0,0.75)" : "rgba(255,255,255,0.9)";
   ctx.shadowBlur = heldOut ? 0 : 2;
   ctx.font = "600 10px Inter, -apple-system, sans-serif";
   ctx.textAlign = "center";
@@ -261,18 +251,7 @@ function drawLatentBar(ctx, x, y, width, height, mode, alpha) {
     const heldOut = mode !== "clean" && level === 2;
     let noiseAmount = 0;
     if (mode === "levelNoise" && level < 2) noiseAmount = TRAINING_EXAMPLE.displayNoiseAmounts[level];
-    drawLatentSegment(
-      ctx,
-      segmentX,
-      y,
-      segmentWidth,
-      height,
-      level,
-      noiseAmount,
-      heldOut,
-      alpha,
-      mode === "levelNoise"
-    );
+    drawLatentSegment(ctx, segmentX, y, segmentWidth, height, level, noiseAmount, heldOut, alpha, mode === "levelNoise");
     segmentX += segmentWidth;
   }
   ctx.save();
@@ -397,14 +376,7 @@ function drawTrainingPipelineDesktop(ctx, width, y, state) {
   ctx.fillText("global time  30%", ditX + ditWidth / 2, timeChipY + 16);
   ctx.restore();
   drawPipelineArrow(ctx, ditX + ditWidth / 2, timeChipY + 38, ditX + ditWidth / 2, ditY - 8, state.predict);
-  drawPipelineArrow(
-    ctx,
-    ditX + ditWidth + 10,
-    ditY + ditHeight / 2,
-    outputX - 10,
-    mixY,
-    state.predict
-  );
+  drawPipelineArrow(ctx, ditX + ditWidth + 10, ditY + ditHeight / 2, outputX - 10, mixY, state.predict);
 
   ctx.save();
   ctx.globalAlpha = state.predict;
@@ -468,14 +440,7 @@ function drawTrainingPipelineMobile(ctx, width, y, state) {
   ctx.textBaseline = "middle";
   ctx.fillText("ONE SHARED DiT", width / 2, ditY + ditHeight / 2);
   ctx.restore();
-  drawPipelineArrow(
-    ctx,
-    width / 2,
-    noiseY + tokenHeight + 28,
-    width / 2,
-    ditY - 8,
-    state.predict
-  );
+  drawPipelineArrow(ctx, width / 2, noiseY + tokenHeight + 28, width / 2, ditY - 8, state.predict);
   drawPipelineArrow(ctx, timeChipX + 72, y + 239, ditX + 35, ditY - 8, state.predict);
   drawPipelineArrow(ctx, width / 2, ditY + ditHeight + 8, width / 2, outputY - 10, state.predict);
 

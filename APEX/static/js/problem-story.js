@@ -63,15 +63,11 @@ function drawCompressionVolume(ctx, stage, x, baseline, scale, alpha, compact = 
   if (showBrace) drawChannelBrace(ctx, x, y, depth, skew, compact);
 
   ctx.fillStyle = INK;
-  ctx.font = compact
-    ? "600 12px Inter, -apple-system, sans-serif"
-    : "600 16px Inter, -apple-system, sans-serif";
+  ctx.font = compact ? "600 12px Inter, -apple-system, sans-serif" : "600 16px Inter, -apple-system, sans-serif";
   ctx.textAlign = "center";
   ctx.fillText(stage.tokens + " tokens", centerX, baseline + (compact ? 19 : 25));
   ctx.fillStyle = MUTED;
-  ctx.font = compact
-    ? "9px Inter, -apple-system, sans-serif"
-    : "12px Inter, -apple-system, sans-serif";
+  ctx.font = compact ? "9px Inter, -apple-system, sans-serif" : "12px Inter, -apple-system, sans-serif";
   if (compact) {
     ctx.fillText(stage.grid + "×" + stage.grid + " grid", centerX, baseline + 34);
     ctx.fillText(stage.channels + " channels", centerX, baseline + 47);
@@ -101,10 +97,7 @@ function drawCompressionSequence(ctx, cssW, cssH, reveals) {
   const slotW = (cssW - horizontalPadding * 2) / 3;
   const baseline = Math.min(220, cssH - 130);
   const positions = COMPRESS_STAGES.map((stage, index) => ({
-    x:
-      horizontalPadding +
-      index * slotW +
-      (slotW - (stage.front + stage.depth) * scale) / 2,
+    x: horizontalPadding + index * slotW + (slotW - (stage.front + stage.depth) * scale) / 2,
     baseline,
   }));
   for (let i = 1; i < positions.length; i++) {

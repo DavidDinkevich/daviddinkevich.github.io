@@ -20,9 +20,7 @@ function lerp(a, b, t) {
 function mixHexColor(a, b, t) {
   const av = parseInt(a.slice(1), 16);
   const bv = parseInt(b.slice(1), 16);
-  const channels = [16, 8, 0].map((shift) =>
-    Math.round(lerp((av >> shift) & 255, (bv >> shift) & 255, clip(t, 0, 1)))
-  );
+  const channels = [16, 8, 0].map((shift) => Math.round(lerp((av >> shift) & 255, (bv >> shift) & 255, clip(t, 0, 1))));
   return "#" + channels.map((value) => value.toString(16).padStart(2, "0")).join("");
 }
 
@@ -117,7 +115,7 @@ function drawStaticNoiseBlock(ctx, x, y, width, height, color, cleanAmount, seed
   const pixels = image.data;
   const clean = clip(cleanAmount, 0, 1);
   for (let index = 0; index < pixels.length; index += 4) {
-    const unitNoise = ((Math.sin((index + seed) * 12.9898) * 43758.5453) % 1 + 1) % 1;
+    const unitNoise = (((Math.sin((index + seed) * 12.9898) * 43758.5453) % 1) + 1) % 1;
     const noise = unitNoise * 255;
     pixels[index] = Math.round(lerp(noise, target.r, clean));
     pixels[index + 1] = Math.round(lerp(noise, target.g, clean));

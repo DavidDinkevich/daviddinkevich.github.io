@@ -385,7 +385,9 @@ a:hover {
 .split-section.will-reveal {
   opacity: 0;
   transform: translateY(22px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s ease;
 }
 
 .split-section.is-in {
@@ -681,7 +683,11 @@ a:hover {
   padding: 7px 12px;
   color: var(--ink);
   background: transparent;
-  font: 600 12px/1 -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  font:
+    600 12px/1 -apple-system,
+    BlinkMacSystemFont,
+    "Inter",
+    sans-serif;
   cursor: pointer;
 }
 
@@ -736,7 +742,11 @@ a:hover {
   padding: 7px 13px;
   color: var(--ink);
   background: rgba(251, 251, 253, 0.94);
-  font: 600 13px/1 -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  font:
+    600 13px/1 -apple-system,
+    BlinkMacSystemFont,
+    "Inter",
+    sans-serif;
   cursor: pointer;
 }
 

@@ -85,9 +85,7 @@ async function loadHeroFrames(frameRoot, onBatchLoaded) {
     for (let firstIndex = 1; firstIndex < HERO.imageCount; firstIndex += HERO_FRAME_BATCH_SIZE) {
       const endIndex = Math.min(firstIndex + HERO_FRAME_BATCH_SIZE, HERO.imageCount);
       const batch = await Promise.all(
-        Array.from({ length: endIndex - firstIndex }, (_, offset) =>
-          loadHeroFrame(frameRootUrl, firstIndex + offset, tauMax)
-        )
+        Array.from({ length: endIndex - firstIndex }, (_, offset) => loadHeroFrame(frameRootUrl, firstIndex + offset, tauMax))
       );
       trajectory.frames.push(...batch);
       onBatchLoaded(trajectory);
@@ -312,16 +310,7 @@ function drawToken(ctx, cssW, cssH, tau, g, n, labels, colors) {
         ctx.fillStyle = "#ececef";
         ctx.fillRect(bandX, y, bandW, barH);
       } else {
-        drawStaticNoiseBlock(
-          ctx,
-          bandX + 1,
-          y + 1,
-          bandW - 2,
-          barH - 2,
-          colors[l],
-          clean,
-          tau * 800 + l * 17 + index * 31
-        );
+        drawStaticNoiseBlock(ctx, bandX + 1, y + 1, bandW - 2, barH - 2, colors[l], clean, tau * 800 + l * 17 + index * 31);
       }
       ctx.restore();
       ctx.fillStyle = state === "unstarted" ? colors[l] : "#fff";
@@ -438,14 +427,7 @@ async function startHero() {
   const previousImageButton = document.getElementById("hero-previous-image");
   const playbackButton = document.getElementById("hero-playback");
   const nextImageButton = document.getElementById("hero-next-image");
-  if (
-    outputCanvases.some((canvas) => !canvas) ||
-    !clockCanvas ||
-    !tokenCanvas ||
-    !previousImageButton ||
-    !playbackButton ||
-    !nextImageButton
-  ) {
+  if (outputCanvases.some((canvas) => !canvas) || !clockCanvas || !tokenCanvas || !previousImageButton || !playbackButton || !nextImageButton) {
     return;
   }
   if (!Array.isArray(HERO.trajectories) || HERO.trajectories.length === 0) {
@@ -513,17 +495,7 @@ async function startHero() {
 
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(
-      frame.image,
-      level * trajectory.frameWidth,
-      0,
-      trajectory.frameWidth,
-      trajectory.frameHeight,
-      0,
-      0,
-      width,
-      height
-    );
+    ctx.drawImage(frame.image, level * trajectory.frameWidth, 0, trajectory.frameWidth, trajectory.frameHeight, 0, 0, width, height);
   }
 
   function render(tau, caption, handlePulse) {
@@ -536,17 +508,7 @@ async function startHero() {
 
     const clock = clockCanvas.getContext("2d");
     clock.setTransform(dpr, 0, 0, dpr, 0, 0);
-    drawClock(
-      clock,
-      clockCanvas.clientWidth,
-      clockCanvas.clientHeight,
-      tau,
-      g,
-      n,
-      HERO.labels,
-      HERO.colors,
-      handlePulse
-    );
+    drawClock(clock, clockCanvas.clientWidth, clockCanvas.clientHeight, tau, g, n, HERO.labels, HERO.colors, handlePulse);
 
     const tok = tokenCanvas.getContext("2d");
     tok.setTransform(dpr, 0, 0, dpr, 0, 0);

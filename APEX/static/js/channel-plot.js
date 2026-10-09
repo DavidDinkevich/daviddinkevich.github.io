@@ -33,8 +33,7 @@ function drawProblemTradeoff(ctx, cssW, cssH, state) {
   const reconstructionTop = chartTop;
   const generationTop = chartTop + laneHeight + laneGap;
   const xOf = (channels) => plotXLog(channels, left, plotW);
-  const reconstructionY = (value) =>
-    reconstructionTop + 10 + ((0.23 - value) / (0.23 - 0.12)) * (laneHeight - 20);
+  const reconstructionY = (value) => reconstructionTop + 10 + ((0.23 - value) / (0.23 - 0.12)) * (laneHeight - 20);
   const generationY = (value) => generationTop + 10 + ((28 - value) / 28) * (laneHeight - 20);
   const fade = state.baseFade == null ? 1 : state.baseFade;
 
@@ -59,9 +58,7 @@ function drawProblemTradeoff(ctx, cssW, cssH, state) {
 
   function drawLaneHeading(label, status, y, color, alpha = 1) {
     ctx.fillStyle = INK;
-    ctx.font = compact
-      ? "600 12px Inter, -apple-system, sans-serif"
-      : "600 13px Inter, -apple-system, sans-serif";
+    ctx.font = compact ? "600 12px Inter, -apple-system, sans-serif" : "600 13px Inter, -apple-system, sans-serif";
     ctx.textAlign = "left";
     ctx.fillText(label, left, y);
     ctx.save();
@@ -106,9 +103,7 @@ function drawProblemTradeoff(ctx, cssW, cssH, state) {
       ctx.beginPath();
       ctx.arc(point.x, point.y, 4.5, 0, Math.PI * 2);
       ctx.fill();
-      ctx.font = compact
-        ? "600 10px Inter, -apple-system, sans-serif"
-        : "600 11px Inter, -apple-system, sans-serif";
+      ctx.font = compact ? "600 10px Inter, -apple-system, sans-serif" : "600 11px Inter, -apple-system, sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = point.y < yOf(values[1]) ? "top" : "bottom";
       const labelOffset = ctx.textBaseline === "top" ? 9 : -8;
@@ -159,8 +154,7 @@ function drawChannelPlot(ctx, cssW, cssH, state) {
   if (showReconstruction) {
     const insetTop = 24;
     const insetBottom = 52;
-    const reconstructionY = (value) =>
-      insetTop + ((0.23 - value) / (0.23 - 0.12)) * (insetBottom - insetTop);
+    const reconstructionY = (value) => insetTop + ((0.23 - value) / (0.23 - 0.12)) * (insetBottom - insetTop);
     const points = CHANNEL_PLOT.widths.map((channels, index) => ({
       x: xOf(channels),
       y: reconstructionY(MATCHED_RECONSTRUCTION_FID[index]),
@@ -305,9 +299,7 @@ function drawChannelPlot(ctx, cssW, cssH, state) {
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.fillStyle = "#d70015";
-    ctx.font = compact
-      ? "600 12px Inter, -apple-system, sans-serif"
-      : "600 13px Inter, -apple-system, sans-serif";
+    ctx.font = compact ? "600 12px Inter, -apple-system, sans-serif" : "600 13px Inter, -apple-system, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("Generation collapses", labelX + labelW / 2, labelY + labelH / 2 + 0.5);

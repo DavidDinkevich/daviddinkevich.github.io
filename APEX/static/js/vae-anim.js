@@ -105,10 +105,7 @@ function latentSlices(retainedLevel, zeroProgress) {
   const fractions = [0.18, 0.28, 0.54];
   return fractions.map((fraction, level) => ({
     fraction,
-    color:
-      level <= retainedLevel
-        ? APEX_LEVEL.colors[level]
-        : mixHexColor(APEX_LEVEL.colors[level], "#d2d3d7", zeroProgress),
+    color: level <= retainedLevel ? APEX_LEVEL.colors[level] : mixHexColor(APEX_LEVEL.colors[level], "#d2d3d7", zeroProgress),
     label: String(level),
     labelColor: level > retainedLevel && zeroProgress > 0.5 ? MUTED : "#fff",
   }));
@@ -117,9 +114,7 @@ function latentSlices(retainedLevel, zeroProgress) {
 function drawLevelLegend(ctx, x, y, compact = false) {
   let legendX = x;
   const swatch = compact ? 9 : 12;
-  ctx.font = compact
-    ? "600 10px Inter, -apple-system, sans-serif"
-    : "600 13px Inter, -apple-system, sans-serif";
+  ctx.font = compact ? "600 10px Inter, -apple-system, sans-serif" : "600 13px Inter, -apple-system, sans-serif";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
   for (let level = 0; level < APEX_LEVEL.labels.length; level++) {
@@ -185,26 +180,8 @@ function drawVaeDesktop(ctx, w, h, stills, retainedLevel) {
   const reconThumbX = w / 2 + innerGap / 2;
   const routeY = lossY + thumb / 2;
   drawElbowArrow(ctx, imageX + imageSize / 2, imageY + imageSize + 24, targetX - 8, routeY, "resize", 1);
-  drawElbowArrow(
-    ctx,
-    reconX + imageSize / 2,
-    reconY + imageSize + 24,
-    reconThumbX + thumb + 8,
-    routeY,
-    "resize",
-    1
-  );
-  drawLossPair(
-    ctx,
-    stills[2],
-    stills[retainedLevel],
-    targetX,
-    reconThumbX,
-    lossY,
-    thumb,
-    prefix.resolution,
-    1
-  );
+  drawElbowArrow(ctx, reconX + imageSize / 2, reconY + imageSize + 24, reconThumbX + thumb + 8, routeY, "resize", 1);
+  drawLossPair(ctx, stills[2], stills[retainedLevel], targetX, reconThumbX, lossY, thumb, prefix.resolution, 1);
   ctx.restore();
 }
 
@@ -247,35 +224,9 @@ function drawVaeMobile(ctx, w, h, stills, retainedLevel) {
   const targetX = w / 2 - innerGap / 2 - thumb;
   const reconThumbX = w / 2 + innerGap / 2;
   const routeY = lossY + thumb / 2;
-  drawElbowArrow(
-    ctx,
-    imageX + imageSize / 2,
-    imageY + imageSize + 24,
-    targetX - 8,
-    routeY,
-    "resize",
-    1
-  );
-  drawElbowArrow(
-    ctx,
-    reconX + imageSize / 2,
-    reconY + imageSize + 24,
-    reconThumbX + thumb + 8,
-    routeY,
-    "resize",
-    1
-  );
-  drawLossPair(
-    ctx,
-    stills[2],
-    stills[retainedLevel],
-    targetX,
-    reconThumbX,
-    lossY,
-    thumb,
-    prefix.resolution,
-    1
-  );
+  drawElbowArrow(ctx, imageX + imageSize / 2, imageY + imageSize + 24, targetX - 8, routeY, "resize", 1);
+  drawElbowArrow(ctx, reconX + imageSize / 2, reconY + imageSize + 24, reconThumbX + thumb + 8, routeY, "resize", 1);
+  drawLossPair(ctx, stills[2], stills[retainedLevel], targetX, reconThumbX, lossY, thumb, prefix.resolution, 1);
 }
 
 function drawVaeFrame(ctx, w, h, stills, retainedLevel) {
@@ -322,9 +273,10 @@ async function startVaeAnim() {
     if (status) status.textContent = vaeCaption(retainedLevel);
   }
 
-  if (replayButton) replayButton.addEventListener("click", () => {
-    manualLevel = null;
-  });
+  if (replayButton)
+    replayButton.addEventListener("click", () => {
+      manualLevel = null;
+    });
 
   const player = createOneShotPlayer({
     section,
