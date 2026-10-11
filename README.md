@@ -7,9 +7,10 @@ The homepage is a dependency-free static site:
 - `index.html` contains the page content and metadata.
 - `static/css/index.css` contains the visual system and responsive styles.
 - `static/js/index.js` contains abstract and preview interactions.
-- `embargo/` contains the temporary APEX placeholder and lowercase redirect.
+- `embargo/` contains the Coming Soon placeholder and lowercase redirect.
+- `APEX/` contains the published project page. The paper PDF is not included.
 
-The standalone APEX project page and research code live in the separate `DavidDinkevich/APEX` repository. Its `gh-pages` branch owns `https://daviddinkevich.github.io/APEX/` after publication.
+The research code stays in the private `DavidDinkevich/APEX` repository. This site serves `https://daviddinkevich.github.io/APEX/` because GitHub Pages cannot be enabled on that private repository.
 
 Run a local preview from the repository root:
 

@@ -8,6 +8,7 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 EMBARGO_MARKER = REPOSITORY_ROOT / ".apex-embargo"
 PUBLIC_PAPER_URL_FILE = REPOSITORY_ROOT / "apex-paper-url.txt"
+APEX_SOURCE = REPOSITORY_ROOT / "APEX"
 PAPER_LINK = (
     '<a class="action-link" href="/APEX/static/pdfs/apex_paper.pdf" '
     'aria-label="APEX paper PDF, 39 megabytes">Paper</a>'
@@ -41,9 +42,19 @@ def read_public_paper_url() -> str:
     return paper_url
 
 
+def homepage_paper_html(paper_url: str | None) -> str:
+    homepage = (REPOSITORY_ROOT / "index.html").read_text()
+    assert homepage.count(PAPER_LINK) == 1
+    if paper_url is None:
+        return homepage.replace(PAPER_LINK, PAPER_COMING_SOON)
+    public_paper_link = f'<a class="action-link" href="{paper_url}">Paper</a>'
+    return homepage.replace(PAPER_LINK, public_paper_link)
+
+
 def assemble_site(mode: str, output: Path) -> None:
     assert mode in {"embargo", "released"}, mode
-    if mode == "released":
+    paper_url = None
+    if mode == "released" and PUBLIC_PAPER_URL_FILE.is_file():
         paper_url = read_public_paper_url()
     assert not output.exists(), f"Output already exists: {output}"
     output.mkdir(parents=True)
@@ -54,9 +65,7 @@ def assemble_site(mode: str, output: Path) -> None:
         copy_directory(REPOSITORY_ROOT / directory, output / directory)
 
     if mode == "embargo":
-        homepage = (REPOSITORY_ROOT / "index.html").read_text()
-        assert homepage.count(PAPER_LINK) == 1
-        (output / "index.html").write_text(homepage.replace(PAPER_LINK, PAPER_COMING_SOON))
+        (output / "index.html").write_text(homepage_paper_html(None))
         copy_file(REPOSITORY_ROOT / "embargo/sitemap.xml", output / "sitemap.xml")
         copy_file(REPOSITORY_ROOT / "embargo/apex-coming-soon.html", output / "APEX/index.html")
         lowercase_alias = output / "apex"
@@ -70,17 +79,21 @@ def assemble_site(mode: str, output: Path) -> None:
         assert apex_files == [Path("index.html")], apex_files
         assert not (output / "APEX/static/pdfs/apex_paper.pdf").exists()
     else:
-        homepage = (REPOSITORY_ROOT / "index.html").read_text()
-        assert homepage.count(PAPER_LINK) == 1
-        public_paper_link = f'<a class="action-link" href="{paper_url}">Paper</a>'
-        (output / "index.html").write_text(homepage.replace(PAPER_LINK, public_paper_link))
+        (output / "index.html").write_text(homepage_paper_html(paper_url))
         copy_file(REPOSITORY_ROOT / "sitemap.xml", output / "sitemap.xml")
-        copy_file(REPOSITORY_ROOT / "embargo/apex-alias.html", output / "apex/index.html")
-        assert "APEX" not in {path.name for path in output.iterdir()}
-        alias_files = sorted(
-            path.relative_to(output / "apex") for path in (output / "apex").rglob("*") if path.is_file()
-        )
-        assert alias_files == [Path("index.html")], alias_files
+        assert APEX_SOURCE.is_dir(), APEX_SOURCE
+        copy_directory(APEX_SOURCE, output / "APEX")
+        assert (output / "APEX/index.html").is_file()
+        assert not (output / "APEX/static/pdfs/apex_paper.pdf").exists()
+        lowercase_alias = output / "apex"
+        if lowercase_alias.exists() and lowercase_alias.samefile(output / "APEX"):
+            pass
+        else:
+            copy_file(REPOSITORY_ROOT / "embargo/apex-alias.html", lowercase_alias / "index.html")
+            alias_files = sorted(
+                path.relative_to(lowercase_alias) for path in lowercase_alias.rglob("*") if path.is_file()
+            )
+            assert alias_files == [Path("index.html")], alias_files
 
     (output / ".nojekyll").touch()
 

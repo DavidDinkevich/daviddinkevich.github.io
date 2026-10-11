@@ -1,6 +1,8 @@
 # APEX embargo
 
-The tracked `.apex-embargo` marker controls what GitHub Pages publishes.
+The tracked `.apex-embargo` marker controls what GitHub Pages publishes from this repository.
+
+The project page is public. The paper PDF and research code are not.
 
 While the marker exists:
 
@@ -10,27 +12,30 @@ While the marker exists:
 - The homepage keeps its APEX card, but its Paper action reads “Paper — Coming Soon.”
 - The deployed sitemap omits `/APEX/`.
 
-The complete project page, paper, and research code live in the private `DavidDinkevich/APEX` repository. Its `gh-pages` branch is staged but GitHub Pages remains disabled.
+`DavidDinkevich/APEX` stays private. GitHub Pages cannot be enabled on that private repository, so the published project page is the copy under `APEX/` in this repository.
 
-## Publish after arXiv
+Without the marker:
+
+- `/APEX/` serves the project page from `APEX/`.
+- `/apex/` redirects to `/APEX/`.
+- The homepage Paper action stays “Paper — Coming Soon” until `apex-paper-url.txt` exists.
+- The PDF is not in the deployed tree.
+
+## Link the paper after arXiv
 
 After the arXiv page is public:
 
-1. Update the APEX `gh-pages` branch so its arXiv and Code actions point to the public resources.
-2. Push both APEX branches while the repository is private.
-3. Make `DavidDinkevich/APEX` public and enable GitHub Pages from the `gh-pages` branch at `/`.
-4. Verify `https://daviddinkevich.github.io/APEX/` serves the complete project page.
-5. In this repository, record the public paper URL and remove the embargo:
+1. Point the APEX project-page arXiv action at the public abs URL and, if the PDF should be hosted here, add it then.
+2. Record the public paper URL and keep the embargo marker absent:
 
    ```bash
    printf '%s\n' 'https://arxiv.org/abs/ARXIV_ID' > apex-paper-url.txt
-   git rm .apex-embargo
    git add apex-paper-url.txt
-   git commit -m "Website: Publish APEX project page" -m "Hand the project route to its public repository and link the arXiv paper."
+   git commit -m "Website: Link APEX arXiv paper" -m "Send the homepage Paper action to the public abs page."
    git push origin main
    ```
 
-Wait for both Pages builds to succeed, then verify:
+Wait for the Pages build, then verify:
 
 - `https://daviddinkevich.github.io/APEX/`
 - `https://daviddinkevich.github.io/apex/`
@@ -40,9 +45,9 @@ Confirm the project page’s PDF, arXiv, and Code actions; confirm the personal 
 
 If the `/APEX/` prefix was temporarily hidden through Google Search Console, cancel that removal. Inspect the canonical APEX URL and request indexing once.
 
-## Re-enable the embargo
+## Re-enable the Coming Soon page
 
-Before publication, keep the APEX repository private with Pages disabled. Restore the marker in this repository if needed, then commit and push:
+Restore the marker, then commit and push:
 
 ```bash
 printf '%s\n' 'Remove this file to publish the complete APEX project page.' > .apex-embargo
