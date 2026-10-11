@@ -22,11 +22,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Assemble static site
-        run: |
-          mkdir _site
-          cp index.html 404.html robots.txt sitemap.xml _site/
-          cp -R static publications APEX apex _site/
-          touch _site/.nojekyll
+        run: python3 scripts/assemble_site.py
 
       - name: Check local links
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
@@ -47,13 +43,10 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Assemble static site
-        run: |
-          mkdir _site
-          cp index.html 404.html robots.txt sitemap.xml _site/
-          cp -R static publications APEX apex _site/
-          touch _site/.nojekyll
+        run: python3 scripts/assemble_site.py
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4
         with:
           folder: _site
+          clean: true
