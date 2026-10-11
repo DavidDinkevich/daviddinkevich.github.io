@@ -7,11 +7,13 @@ from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 EMBARGO_MARKER = REPOSITORY_ROOT / ".apex-embargo"
+PUBLIC_PAPER_URL_FILE = REPOSITORY_ROOT / "apex-paper-url.txt"
 PAPER_LINK = (
     '<a class="action-link" href="/APEX/static/pdfs/apex_paper.pdf" '
     'aria-label="APEX paper PDF, 39 megabytes">Paper</a>'
 )
 PAPER_COMING_SOON = '<span class="action-link action-link--disabled" aria-disabled="true">Paper — Coming Soon</span>'
+APEX_PAPER_HREF = 'href="static/pdfs/apex_paper.pdf?v=2"'
 
 
 def parse_args() -> argparse.Namespace:
@@ -32,8 +34,18 @@ def copy_directory(source: Path, destination: Path) -> None:
     shutil.copytree(source, destination)
 
 
+def read_public_paper_url() -> str:
+    assert PUBLIC_PAPER_URL_FILE.is_file(), PUBLIC_PAPER_URL_FILE
+    paper_url = PUBLIC_PAPER_URL_FILE.read_text().strip()
+    assert paper_url.startswith(("https://arxiv.org/abs/", "https://arxiv.org/pdf/")), paper_url
+    assert "\n" not in paper_url
+    return paper_url
+
+
 def assemble_site(mode: str, output: Path) -> None:
     assert mode in {"embargo", "full"}, mode
+    if mode == "full":
+        paper_url = read_public_paper_url()
     assert not output.exists(), f"Output already exists: {output}"
     output.mkdir(parents=True)
 
@@ -59,11 +71,18 @@ def assemble_site(mode: str, output: Path) -> None:
         assert apex_files == [Path("index.html")], apex_files
         assert not (output / "APEX/static/pdfs/apex_paper.pdf").exists()
     else:
-        copy_file(REPOSITORY_ROOT / "index.html", output / "index.html")
+        homepage = (REPOSITORY_ROOT / "index.html").read_text()
+        assert homepage.count(PAPER_LINK) == 1
+        public_paper_link = f'<a class="action-link" href="{paper_url}">Paper</a>'
+        (output / "index.html").write_text(homepage.replace(PAPER_LINK, public_paper_link))
         copy_file(REPOSITORY_ROOT / "sitemap.xml", output / "sitemap.xml")
         copy_directory(REPOSITORY_ROOT / "APEX", output / "APEX")
         copy_directory(REPOSITORY_ROOT / "apex", output / "apex")
-        assert (output / "APEX/static/pdfs/apex_paper.pdf").is_file()
+        apex_homepage = output / "APEX/index.html"
+        apex_html = apex_homepage.read_text()
+        assert apex_html.count(APEX_PAPER_HREF) == 1
+        apex_homepage.write_text(apex_html.replace(APEX_PAPER_HREF, f'href="{paper_url}"'))
+        assert not (output / "APEX/static/pdfs/apex_paper.pdf").exists()
 
     (output / ".nojekyll").touch()
 
