@@ -13,12 +13,11 @@ PAPER_LINK = (
     'aria-label="APEX paper PDF, 39 megabytes">Paper</a>'
 )
 PAPER_COMING_SOON = '<span class="action-link action-link--disabled" aria-disabled="true">Paper — Coming Soon</span>'
-APEX_PAPER_HREF = 'href="static/pdfs/apex_paper.pdf?v=2"'
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=("auto", "embargo", "full"), default="auto")
+    parser.add_argument("--mode", choices=("auto", "embargo", "released"), default="auto")
     parser.add_argument("--output", type=Path, default=Path("_site"))
     return parser.parse_args()
 
@@ -43,8 +42,8 @@ def read_public_paper_url() -> str:
 
 
 def assemble_site(mode: str, output: Path) -> None:
-    assert mode in {"embargo", "full"}, mode
-    if mode == "full":
+    assert mode in {"embargo", "released"}, mode
+    if mode == "released":
         paper_url = read_public_paper_url()
     assert not output.exists(), f"Output already exists: {output}"
     output.mkdir(parents=True)
@@ -76,13 +75,12 @@ def assemble_site(mode: str, output: Path) -> None:
         public_paper_link = f'<a class="action-link" href="{paper_url}">Paper</a>'
         (output / "index.html").write_text(homepage.replace(PAPER_LINK, public_paper_link))
         copy_file(REPOSITORY_ROOT / "sitemap.xml", output / "sitemap.xml")
-        copy_directory(REPOSITORY_ROOT / "APEX", output / "APEX")
-        copy_directory(REPOSITORY_ROOT / "apex", output / "apex")
-        apex_homepage = output / "APEX/index.html"
-        apex_html = apex_homepage.read_text()
-        assert apex_html.count(APEX_PAPER_HREF) == 1
-        apex_homepage.write_text(apex_html.replace(APEX_PAPER_HREF, f'href="{paper_url}"'))
-        assert not (output / "APEX/static/pdfs/apex_paper.pdf").exists()
+        copy_file(REPOSITORY_ROOT / "embargo/apex-alias.html", output / "apex/index.html")
+        assert "APEX" not in {path.name for path in output.iterdir()}
+        alias_files = sorted(
+            path.relative_to(output / "apex") for path in (output / "apex").rglob("*") if path.is_file()
+        )
+        assert alias_files == [Path("index.html")], alias_files
 
     (output / ".nojekyll").touch()
 
@@ -90,7 +88,7 @@ def assemble_site(mode: str, output: Path) -> None:
 def main() -> None:
     args = parse_args()
     if args.mode == "auto":
-        mode = "embargo" if EMBARGO_MARKER.exists() else "full"
+        mode = "embargo" if EMBARGO_MARKER.exists() else "released"
     else:
         mode = args.mode
     output = args.output if args.output.is_absolute() else REPOSITORY_ROOT / args.output
