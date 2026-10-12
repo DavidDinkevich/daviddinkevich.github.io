@@ -53,9 +53,6 @@ def homepage_paper_html(paper_url: str | None) -> str:
 
 def assemble_site(mode: str, output: Path) -> None:
     assert mode in {"embargo", "released"}, mode
-    paper_url = None
-    if mode == "released" and PUBLIC_PAPER_URL_FILE.is_file():
-        paper_url = read_public_paper_url()
     assert not output.exists(), f"Output already exists: {output}"
     output.mkdir(parents=True)
 
@@ -79,12 +76,17 @@ def assemble_site(mode: str, output: Path) -> None:
         assert apex_files == [Path("index.html")], apex_files
         assert not (output / "APEX/static/pdfs/apex_paper.pdf").exists()
     else:
+        paper_url = read_public_paper_url()
         (output / "index.html").write_text(homepage_paper_html(paper_url))
+        assert paper_url in (output / "index.html").read_text()
+        assert PAPER_COMING_SOON not in (output / "index.html").read_text()
         copy_file(REPOSITORY_ROOT / "sitemap.xml", output / "sitemap.xml")
         assert APEX_SOURCE.is_dir(), APEX_SOURCE
         copy_directory(APEX_SOURCE, output / "APEX")
         assert (output / "APEX/index.html").is_file()
-        assert not (output / "APEX/static/pdfs/apex_paper.pdf").exists()
+        assert (output / "APEX/static/pdfs/apex_paper.pdf").is_file()
+        assert paper_url in (output / "APEX/index.html").read_text()
+        assert "PDF (coming soon)" not in (output / "APEX/index.html").read_text()
         lowercase_alias = output / "apex"
         if lowercase_alias.exists() and lowercase_alias.samefile(output / "APEX"):
             pass

@@ -2,7 +2,7 @@
 
 The tracked `.apex-embargo` marker controls what GitHub Pages publishes from this repository.
 
-The project page is public. The paper PDF and research code are not.
+The project page and paper are public. The research code is not.
 
 While the marker exists:
 
@@ -16,34 +16,10 @@ While the marker exists:
 
 Without the marker:
 
-- `/APEX/` serves the project page from `APEX/`.
+- `/APEX/` serves the project page from `APEX/`, including the paper PDF.
 - `/apex/` redirects to `/APEX/`.
-- The homepage Paper action stays “Paper — Coming Soon” until `apex-paper-url.txt` exists.
-- The PDF is not in the deployed tree.
-
-## Link the paper after arXiv
-
-After the arXiv page is public:
-
-1. Point the APEX project-page arXiv action at the public abs URL and, if the PDF should be hosted here, add it then.
-2. Record the public paper URL and keep the embargo marker absent:
-
-   ```bash
-   printf '%s\n' 'https://arxiv.org/abs/ARXIV_ID' > apex-paper-url.txt
-   git add apex-paper-url.txt
-   git commit -m "Website: Link APEX arXiv paper" -m "Send the homepage Paper action to the public abs page."
-   git push origin main
-   ```
-
-Wait for the Pages build, then verify:
-
-- `https://daviddinkevich.github.io/APEX/`
-- `https://daviddinkevich.github.io/apex/`
-- `https://daviddinkevich.github.io/sitemap.xml`
-
-Confirm the project page’s PDF, arXiv, and Code actions; confirm the personal homepage Paper action points to arXiv.
-
-If the `/APEX/` prefix was temporarily hidden through Google Search Console, cancel that removal. Inspect the canonical APEX URL and request indexing once.
+- The homepage Paper action links to the arXiv abs URL in `apex-paper-url.txt`.
+- Code stays “Coming Soon” until the APEX repository is public.
 
 ## Re-enable the Coming Soon page
 

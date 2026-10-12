@@ -8,7 +8,7 @@ The homepage is a dependency-free static site:
 - `static/css/index.css` contains the visual system and responsive styles.
 - `static/js/index.js` contains abstract and preview interactions.
 - `embargo/` contains the Coming Soon placeholder and lowercase redirect.
-- `APEX/` contains the published project page. The paper PDF is not included.
+- `APEX/` contains the published project page, including the paper PDF.
 
 The research code stays in the private `DavidDinkevich/APEX` repository. This site serves `https://daviddinkevich.github.io/APEX/` because GitHub Pages cannot be enabled on that private repository.
 
